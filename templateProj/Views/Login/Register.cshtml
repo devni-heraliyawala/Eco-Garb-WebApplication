@@ -213,7 +213,6 @@
                 var child = document.getElementById("passwordValidate");
                 parent.removeChild(child);
                 document.getElementById("password").style.borderColor = "initial";
-
             }
         }
 
@@ -320,21 +319,79 @@
 
             }
 
-             if (password == null || password == "") {
-                var para = document.createElement("p");
-                para.setAttribute("id", "passwordValidate")
-                var node = document.createTextNode("please enter the password");
-                para.appendChild(node);
-                var element = document.getElementById("divPassword");
-                element.appendChild(para);
+             var matNum = /[0-9]/;
+             var lowcase = /[a-z]/;
+             var upcase = /[A-Z]/;
+             if (password == null || password == "" || password.length < 6 || !password.match(matNum) || !password.match(lowcase) || !password.match(upcase)) {
+          
+                 if (password == null || password == "") {
+                     var para = document.createElement("p");
+                     para.setAttribute("id", "passwordValidate")
+                     var node = document.createTextNode("please enter the password");
+                     para.appendChild(node);
+                     var element = document.getElementById("divPassword");
+                     element.appendChild(para);
 
-                var child = document.getElementById("passwordValidate");
-                element.replaceChild(para, child);
+                     var child = document.getElementById("passwordValidate");
+                     element.replaceChild(para, child);
 
-                document.getElementById("passwordValidate").style.color = "red";
-                document.getElementById("password").style.borderColor = "red";
+                     document.getElementById("passwordValidate").style.color = "red";
+                     document.getElementById("password").style.borderColor = "red";
 
-            }
+                 } else if (password.length < 6 ){
+                     var para = document.createElement("p");
+                     para.setAttribute("id", "passwordValidate")
+                     var node = document.createTextNode("pasword must contains atleast 6 characters");
+                     para.appendChild(node);
+                     var element = document.getElementById("divPassword");
+                     element.appendChild(para);
+
+                     var child = document.getElementById("passwordValidate");
+                     element.replaceChild(para, child);
+
+                     document.getElementById("passwordValidate").style.color = "red";
+                     document.getElementById("password").style.borderColor = "red";
+                 } else if (!password.match(matNum)){
+                     var para = document.createElement("p");
+                     para.setAttribute("id", "passwordValidate")
+                     var node = document.createTextNode("password must contains atleast 1 number");
+                     para.appendChild(node);
+                     var element = document.getElementById("divPassword");
+                     element.appendChild(para);
+
+                     var child = document.getElementById("passwordValidate");
+                     element.replaceChild(para, child);
+
+                     document.getElementById("passwordValidate").style.color = "red";
+                     document.getElementById("password").style.borderColor = "red";
+                 } else if (!password.match(lowcase)) {
+                     var para = document.createElement("p");
+                     para.setAttribute("id", "passwordValidate")
+                     var node = document.createTextNode("password must contains atleast 1 lowercase letter");
+                     para.appendChild(node);
+                     var element = document.getElementById("divPassword");
+                     element.appendChild(para);
+
+                     var child = document.getElementById("passwordValidate");
+                     element.replaceChild(para, child);
+
+                     document.getElementById("passwordValidate").style.color = "red";
+                     document.getElementById("password").style.borderColor = "red";
+                 } else if (!password.match(upcase)) {
+                     var para = document.createElement("p");
+                     para.setAttribute("id", "passwordValidate")
+                     var node = document.createTextNode("password must contains atleast one uppercase letter");
+                     para.appendChild(node);
+                     var element = document.getElementById("divPassword");
+                     element.appendChild(para);
+
+                     var child = document.getElementById("passwordValidate");
+                     element.replaceChild(para, child);
+
+                     document.getElementById("passwordValidate").style.color = "red";
+                     document.getElementById("password").style.borderColor = "red";
+                 }
+             } 
 
              if (cpassword == null || cpassword == "") {
                 var para = document.createElement("p");
