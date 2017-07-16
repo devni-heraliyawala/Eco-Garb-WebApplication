@@ -14,5 +14,9 @@ namespace templateProj.Controllers
             return View();
         }
         
+        public ActionResult testCheckout()
+        {
+            return View();
+        }
     }
 }
