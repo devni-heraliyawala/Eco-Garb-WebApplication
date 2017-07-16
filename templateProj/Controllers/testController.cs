@@ -13,5 +13,9 @@ namespace templateProj.Controllers
         {
             return View();
         }
+        public ActionResult testBranch()
+        {
+            return View();
+        }
     }
 }
