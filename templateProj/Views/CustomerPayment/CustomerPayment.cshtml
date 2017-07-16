@@ -1,0 +1,339 @@
+﻿@model templateProj.Models.HomeViewModel
+@{
+    Layout = null;
+    string ProPicPath = Model.usermodel.ProfilePic;
+    string Uname = Model.usermodel.Username;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Eco-Garb | Starter</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="../../Styles/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../Styles/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect.
+    -->
+    <link rel="stylesheet" href="../../Styles/dist/css/skins/skin-blue.min.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue sidebar-mini" onload="LoadItemPrices()">
+    <div class="wrapper">
+        <!-- Rendering the partial view for the navigation bar-->
+            @Html.Partial("_AdminNavigation", Model.usermodel);
+        <div class="content-wrapper" style="margin-top:-20px">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    Customer Payments
+                    <small></small>
+                </h1>
+            </section>
+            <ol class="breadcrumb" style="left:100px ; top:50px ; background-color:transparent">
+                <li><a href="@Url.Action("Home", "Home" )" style="color:seagreen"><i class="fa fa-dashboard" style="color:seagreen"></i> Home</a></li>
+                <li class="active">Customer Payments</li>
+            </ol>
+            <!-- Main content -->
+            <section class="content">
+                <div class="row" style="margin-top:-20px">
+                    <!-- Load the map here -->
+                    <div class="col-md-9">
+                        <!-- Load the map here -->
+                        <div class="box box-success">
+                            <div class="box-body box-profile">
+
+                                <p class="text-muted text-center"><b>Customer Details</b></p>
+
+                                <div id="map" style="height:480px;width:100%">  </div>
+                            </div><!-- /.box-body -->
+
+                        </div><!-- /.box -->
+
+                    </div><!-- /.col -->
+
+                    <div class="col-md-3">
+                        <!-- Trash type units-->
+                        <div class="box box-success">
+                            <div class="box-body box-profile" id="divTrashName">
+                                <p class="text-muted text-center"><b> Trash Item Prices</b></p>
+                                <p class="text-muted text-center">( unit price )</p>
+                            </div><!-- /.box-body -->
+
+                            <div class="box-body box-profile col-sm-10" id="divUnitPrice" style="position:absolute;top:25px ;margin-left:100px;width:120px">
+                            </div><!-- /.box-body -->
+
+                            <div class="form-group" style="margin-left:40px">
+                                <input type="text" style="width:30px" id="itmCount" name="itmCount" hidden />
+                                <button type="button" class="btn btn-default" id="edit" onclick="EnableEditUnitPrice();" style="background-color:seagreen;color:white;width:70px;height:30px;border-radius:10px;font-weight:600">Edit</button> &nbsp;
+                                <button type="button" class="btn btn-default" id="submit" onclick="SaveUnitPricesValidations();" disabled="disabled" style="background-color:seagreen;color:white;width:90px;height:30px;border-radius:10px;font-weight:600">Submit</button>
+                            </div>
+                            <br />
+                        </div><!-- /.box -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+                <!-- Your Page Content Here -->
+            </section><!-- /.content -->
+        </div><!-- /.content-wrapper -->
+        <!--Rendering the partial view for the footer-->
+        @Html.Partial("_ManagerFooter");
+
+    </div><!-- ./wrapper -->
+    <!-- REQUIRED JS SCRIPTS -->
+    <!-- jQuery 2.1.4 -->
+    <script src="../../Styles/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="../../Styles/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../Styles/dist/js/app.min.js"></script>
+    <!-- Optionally, you can add Slimscroll and FastClick plugins.
+         Both of these plugins are recommended to enhance the
+         user experience. Slimscroll is required when using the
+         fixed layout. -->
+
+    <!---------------------------------------------       Scripts ----------------------------------------->
+    <!--scripts need for manage trash item prices -->
+    <script>
+        function LoadItemPrices() {
+            $.ajax({
+                type: 'GET',
+                url: '/CustomerPayment/LoadItemPrices',
+                traditional: true,
+                success: function (response) {
+
+                    document.getElementById("itmCount").value = response.itemList.length;
+
+                    //load trash item names list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", i);
+                        var node = document.createTextNode(response.itemList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divTrashName");
+                        element.appendChild(para);
+                        document.getElementById(i).style.marginLeft = "20px";
+                    }
+
+                    //load unit price list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "unitPriceValue" + i);
+                        textbox.setAttribute("value", response.unitPriceList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("divUnitPrice");
+                        element1.appendChild(textbox);
+                        //document.getElementById("unitPriceValue" + i).style.marginLeft = "50px";
+                        document.getElementById("unitPriceValue" + i).style.width = "100px";
+                        document.getElementById("unitPriceValue" + i).style.height = "20px";
+                        document.getElementById("unitPriceValue" + i).style.textAlign = "center";
+                        document.getElementById("unitPriceValue0").style.marginTop = "30px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "sample" + i);
+
+                        var element2 = document.getElementById("divUnitPrice");
+                        element2.appendChild(p);
+
+                    }
+                }
+            });
+        }
+
+        function EnableEditUnitPrice() {
+            var itmCount = document.getElementById("itmCount").value;
+
+            for (var i = 0; i < itmCount; i++) {
+                document.getElementById("unitPriceValue" + i).disabled = false;
+            }
+
+            document.getElementById("submit").disabled = false;
+            document.getElementById("submit").innerHTML = "Submit";
+            document.getElementById("edit").disabled = true;
+        }
+
+        function SaveUnitPricesValidations() {
+            var dataArr = [];
+            var nullArr = [];
+            var letterArr = [];
+            var itmCount = document.getElementById("itmCount").value;
+            var letters = /^[A-Za-z ]+$/;
+
+            for (var i = 0; i < itmCount; i++) {
+                dataArr.push(document.getElementById("unitPriceValue" + i).value);
+                if (dataArr[i] == null || dataArr[i] == "") {
+                    //insert null values to someother arr and check againts that one
+                    nullArr.push(i);
+                } else if (dataArr[i].match(letters)) {
+                    letterArr.push(i);
+                }
+            }
+
+            if (nullArr.length > 0) {
+                // that mean you have some null values ( there are some fields where you didnt set unit values)
+                $('#error-modal-msg').html("Please provide possible price values...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            } else if (letterArr.length > 0) {
+                $('#error-modal-msg').html("Please provide numbers as  price values...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+            else {
+                SaveUnitPrices();
+            }
+        }
+
+        function SaveUnitPrices() {
+         
+            // form validations
+            var dataArr = [];
+            var itmCount = document.getElementById("itmCount").value;
+            for (var i = 0; i < itmCount; i++) {
+                dataArr.push(document.getElementById("unitPriceValue" + i).value);
+            }
+           
+            for (var j = dataArr.length - 1; j < 10; j++) {
+                dataArr.push(null);
+            }
+    
+
+            console.log(dataArr);
+            $.ajax({
+                type: 'POST',
+                url: '/CustomerPayment/SaveUnitPriceValues',
+                data: { unitPriceList: dataArr },
+
+                traditional: true,
+                success: function (response) {
+               
+                    var itmCount = document.getElementById("itmCount").value;
+                    for (var i = 0; i < itmCount; i++) {
+                        document.getElementById("unitPriceValue" + i).disabled = true;
+                    }
+
+                    $('#success-modal-msg').html("Unit prices updated successfully..");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                    //change the button appearance
+                    document.getElementById("submit").innerHTML = "Submitted";
+                    $('#submit').attr('disabled', true);
+                    document.getElementById("edit").disabled = false;
+                    //window.location.reload();
+                }
+            });
+        }
+
+    </script>
+    <!--success Message-->
+    <div class="success modal modal fade" id="successModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-green" id="modalHead">
+                    <h4 class="modal-title">Success Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="success-modal-msg" style="font-size:15px;">message content here&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--confirmation Message-->
+    <!--Delete item confirmation-->
+    <div class="success modal modal fade" id="confirmModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-yellow" id="modalHead">
+                    <h4 class="modal-title">Confirmation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-modal-msg" style="font-size:15px;">New Meeting is created&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="buttonOk1" onclick="RemoveItem()">OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="modalBtn1">Cancel</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--Add Item Confirmation-->
+    <div class="success modal modal fade" id="confirmModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-yellow" id="modalHead">
+                    <h4 class="modal-title">Confirmation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-modal-msg2" style="font-size:15px;">New Meeting is created&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="buttonOk1" onclick="AddNewItem()">OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="modalBtn1">Cancel</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--error modal body-->
+    <div class="success modal modal fade" id="errorModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header  bg-red" id="modalHead">
+                    <h4 class="modal-title">Error Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="error-modal-msg" style="font-size:15px;">message content here&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="modalBtn">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</body>
+</html>

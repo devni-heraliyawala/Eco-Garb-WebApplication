@@ -1,0 +1,11 @@
+﻿
+#The variable name you declare here will be the one used inside system to refer the paths.
+#Every declaration must end with a comma right after string and no spaces before or after the equal sign
+#Example : name=luke skywalker,
+
+#[SoF] //declare variables within Sof and EoF tags
+
+loginURL=~/Views/Login/login.cshtml,
+ProfileURL=~/Views/Profile/Profile.cshtml,
+ForgotPwURL=~/Views/Login/ForgotPassword.cshtml,
+#[EoF]

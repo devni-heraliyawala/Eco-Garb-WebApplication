@@ -1,0 +1,785 @@
+﻿@model templateProj.Models.HomeViewModel
+
+
+
+<body class="hold-transition skin-blue sidebar-mini" onload="LoadTrashItems(); markicons();">
+
+
+    <div class="row" style="margin-top:-60px">
+       
+        <div class="form-group has-feedback col-md-4" id="divSpecialValue" style="margin-top:30px">
+            <input type="text" class="form-control" placeholder="Specify the quantity value" id="specialValue" name="specialValue" >
+        </div>
+        <div class="col-md-4" style="margin-top:30px">
+            <button type="button" onclick="findBestRoute()" id="btnFind" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-search" style="color:green"></i> Find Best Route</button> &nbsp;
+        </div>
+        <div class="col-md-4" style="float:right;margin-top:30px">
+            <button type="button" onclick="showAddItemModal()" id="btnAddItem" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-plus" style="color:green"></i> Add Trash Item</button> &nbsp;
+            <button type="button" onclick="showRemoveItemModal()" id="btnRemoveItem1" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-minus" style="color:red"></i>&nbsp; Remove Trash Item</button>
+        </div>
+    </div>
+    <p> </p>
+    <div class="row">
+        <!-- Load the map here -->
+        <div class="col-md-8">
+            <!-- Load the map here -->
+            <div class="box box-success">
+                <div class="box-body box-profile">
+
+                    <p class="text-muted text-center"><b>Best Route Suggestion</b></p>
+
+                    <div id="map" style="height:480px;width:100%">  </div>
+                </div><!-- /.box-body -->
+
+            </div><!-- /.box -->
+
+        </div><!-- /.col -->
+
+        <div class="col-md-4">
+            <!-- Trash type units-->
+            <div class="box box-success">
+                <div class="box-body box-profile" id="divTrashName">
+                    <p class="text-muted text-center" ><b> Trash Meaurements</b></p>
+                </div><!-- /.box-body -->
+
+                <div class="box-body box-profile col-sm-10" id="divTrashType" style="position:absolute;top:25px ;margin-left:100px;width:120px">
+                </div><!-- /.box-body -->
+
+                <div class="form-group" style="margin-left:40px">
+                    <input type="text" style="width:30px" id="itmCount" name="itmCount" hidden />
+                    <button type="button" class="btn btn-default" id="edit" onclick="EnableEditMeasurementTypes();" style="background-color:seagreen;color:white;width:90px;height:30px;border-radius:10px;font-weight:600">Edit</button> &nbsp;
+                    <button type="button" class="btn btn-default" id="submit" onclick="SaveMeasurementTypes();" disabled="disabled" style="background-color:seagreen;color:white;width:110px;height:30px;border-radius:10px;font-weight:600">Submit</button>
+                </div>
+                <br />
+            </div><!-- /.box -->
+
+            <!-- unit conversion -->
+            <div class="box box-success">
+                <div class="box-body box-profile" id="divUnitMeType">
+                    <p class="text-muted text-center"><b>Unit Conversion</b></p><br />
+                </div><!-- /.box-body -->
+
+                <div class="box-body box-profile col-sm-10" id="divUnitValue" style="position:absolute;top:25px ;margin-left:50px;width:60px">
+                </div><!-- /.box-body -->
+
+                <div class="form-group" style="margin-left:40px">
+                    <input type="text" style="width:30px" id="unitItmCount" name="unitItmCount" hidden/>
+                    <button type="button" class="btn btn-default" id="editUnit" onclick="EnableEditUnitValues();" style="background-color:seagreen;color:white;width:90px;height:30px;border-radius:10px;font-weight:600">Edit</button> &nbsp;
+                    <button type="button" class="btn btn-default" id="submitUnit" onclick="SaveUnitValuesValidations();" disabled="disabled" style="background-color:seagreen;color:white;width:110px;height:30px;border-radius:10px;font-weight:600">Submit</button>
+                </div>
+                <br />
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+
+    <!---------------------------------------------       Scripts ----------------------------------------->
+    <!--scripts need for manage trash item views -->
+    <script>
+        function LoadTrashItems() {
+
+            $.ajax({
+                type: 'GET',
+                url: '/Home/LoadTrashItems',
+                traditional: true,
+                success: function (response) {
+                    
+                    document.getElementById("itmCount").value = response.itemList.length;
+                    document.getElementById("unitItmCount").value = response.unitTypeList.length;
+
+
+                    //load trash item names list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", i);
+                        var node = document.createTextNode(response.itemList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divTrashName");
+                        element.appendChild(para);
+                        document.getElementById(i).style.marginLeft = "20px";
+                    }
+
+                    //load trash item types list
+                    for (var i = 0; i < response.typeList.length; i++) {
+
+                        var select = document.createElement("select");
+                        select.setAttribute("id", "select"+i);
+
+                        var option = document.createElement("option");
+                        option.value = "op" + i;
+                        option.text = response.typeList[i];
+
+                        select.add(option, 0);
+
+                        var element = document.getElementById("divTrashType");
+                        element.appendChild(select);
+                        var para2 = document.createElement("p");
+                        element.appendChild(para2);
+                        document.getElementById("select" + i).style.width = "150px";
+                        document.getElementById("select" + i).style.height = "20px";
+                        document.getElementById("select" + i).disabled = true;
+
+                    }
+
+
+
+                    //load unit types list
+                    for (var i = 0; i < response.unitTypeList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "unitType"+i);
+                        var node = document.createTextNode("1  "+response.unitTypeList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divUnitMeType");
+                        element.appendChild(para);
+                        document.getElementById("unitType" + i).style.marginLeft = "20px";
+                        document.getElementById("unitType0").style.marginTop = "-10px";
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "unitValue" + i);
+                        textbox.setAttribute("value", response.unitValueList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("divUnitValue");
+                        element1.appendChild(textbox);
+                        document.getElementById("unitValue" + i).style.marginLeft = "100px";
+                        document.getElementById("unitValue" + i).style.width = "100px";
+                        document.getElementById("unitValue" + i).style.height = "20px";
+                        document.getElementById("unitValue" + i).style.textAlign = "center";
+                        document.getElementById("unitValue0").style.marginTop = "10px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "sample" + i);
+
+                        var element2 = document.getElementById("divUnitValue");
+                        element2.appendChild(p);
+
+                    }
+                }
+            });
+        }
+
+        function findBestRoute() {
+            var specialValue = document.getElementById("specialValue").value;
+            var letters = /^[A-Za-z ]+$/;
+
+            if (specialValue == null || specialValue == "") {
+                $('#error-modal-msg').html("Please provide a value for quantity...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+
+            if (specialValue.match(letters)) {
+                $('#error-modal-msg').html("Please provide a number for quantity...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+        }
+
+        function EnableEditMeasurementTypes() {
+
+            $.ajax({
+                type: 'GET',
+                url: '/Home/EditTrashMeasurementTypes',
+                traditional: true,
+                success: function (response) {
+
+                    var itemCount = document.getElementById("itmCount").value;
+
+                    for (var i = 0; i < itemCount; i++) {
+
+                        var select = document.getElementById("select" + i);
+                        document.getElementById("select" + i).disabled = false;
+
+                        for (var j = 0; j < response.measurementTypeList.length; j++) {
+
+                            var option = document.createElement('option');
+                            option.value = document.getElementById("select" + j).value;
+                            option.text = response.measurementTypeList[j];
+                            select.add(option, 0);
+                        }                      
+                    }
+                    document.getElementById("submit").disabled = false;
+                    document.getElementById("submit").innerHTML = "Submit";
+                    document.getElementById("edit").disabled = true;
+                }
+            });
+        }
+
+        function EnableEditUnitValues() {
+            var unitItmCount = document.getElementById("unitItmCount").value;
+
+            for (var i = 0; i < unitItmCount; i++) {
+                document.getElementById("unitValue" + i).disabled = false;
+            }
+
+            document.getElementById("submitUnit").disabled = false;
+            document.getElementById("submitUnit").innerHTML = "Submit";
+            document.getElementById("editUnit").disabled = true;
+           
+        }
+
+        function SaveMeasurementTypes() {
+            // form validations
+            var dataArr = [];
+            var itemCount = document.getElementById("itmCount").value;
+            for (var i = 0; i < itemCount; i++) {
+                var opt = document.getElementById("select" + i);
+                dataArr.push(opt.options[opt.selectedIndex].text);   
+            }
+
+            for (var j = dataArr.length - 1; j < 10; j++) {
+                dataArr.push(null);
+            }
+
+            console.log(dataArr);
+            $.ajax({
+                type: 'POST',
+                url: '/Home/SaveMeasurementTypes',
+                data: { measurementTypeList: dataArr },
+
+                traditional: true,
+                success: function (response) {
+
+                    var itemCount = document.getElementById("itmCount").value;
+                    for (var i = 0; i < itemCount; i++) {
+                        document.getElementById("select" + i).disabled = true;
+                    }
+                    
+                    $('#success-modal-msg').html("Measurement Types Updated Successfully..");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                    //change the button appearance
+                    document.getElementById("submit").innerHTML = "Submitted";
+                    $('#submit').attr('disabled', true);
+                    document.getElementById("edit").disabled = false;
+                    //window.location.reload();
+                }
+            });
+        }
+
+        function SaveUnitValuesValidations() {
+            var dataArr = [];
+            var nullArr = [];
+            var letterArr = [];
+            var itemCount = document.getElementById("unitItmCount").value;
+            var letters = /^[A-Za-z ]+$/;
+
+            for (var i = 0; i < itemCount; i++) {
+                dataArr.push(document.getElementById("unitValue" + i).value);
+                if (dataArr[i] == null || dataArr[i] == "") {
+                    //insert null values to someother arr and check againts that one
+                    nullArr.push(i);
+                } else if (dataArr[i].match(letters)) {
+                    letterArr.push(i);       
+                }
+            }
+            if (nullArr.length > 0) {
+                // that mean you have some null values ( there are some fields where you didnt set unit values)
+                $('#error-modal-msg').html("Please provide possible unit values...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            } else if (letterArr.length > 0) {
+                $('#error-modal-msg').html("Please provide numbers as  unit values...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+            else {
+                SaveUnitValues();
+            }
+        }
+
+        function SaveUnitValues() {
+            // form validations
+            var dataArr = [];
+            var itemCount = document.getElementById("unitItmCount").value;
+            for (var i = 0; i < itemCount; i++) {
+                dataArr.push(document.getElementById("unitValue" + i).value);
+            }
+            console.log(dataArr);
+            $.ajax({
+                type: 'POST',
+                url: '/Home/SaveUnitValues',
+                data: { unitValueList: dataArr },
+
+                traditional: true,
+                success: function (response) {
+                    var unitItmCount = document.getElementById("unitItmCount").value;
+                    for (var i = 0; i < unitItmCount; i++) {
+                        document.getElementById("unitValue" + i).disabled = true;
+                    }
+
+                    $('#success-modal-msg').html("Unit values updated successfully..");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                    //change the button appearance
+                    document.getElementById("submitUnit").innerHTML = "Submitted";
+                    $('#submitUnit').attr('disabled', true);
+                    document.getElementById("editUnit").disabled = false;
+                    //window.location.reload();
+                }
+            });
+        }
+
+    </script>
+
+    <!--scripts for add new item and delete item-->
+    <script>
+        var itemList = [];
+
+        function showAddItemModal() {
+
+            var itemCount = document.getElementById("itmCount").value;
+            if (itemCount == 10) {
+                $('#error-modal-msg').html("You are at your limit if you want to add more items please contact the development team...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+            else {
+                $('#trashId')
+                .find('option')
+                .remove()
+                .end()
+                .append('<option value="option0">select trash item</option>')
+                .val('select trash item')
+                ;
+                $.ajax({
+                    type: 'GET',
+                    url: '/Home/LoadMeasurementTypes',
+                    traditional: true,
+                    success: function (response) {
+
+                        var select = document.getElementById("trashId");
+                        //if you are at your limit  do not allow to add new items
+                        for (var i = 0; i < response.idList.length; i++) {
+                            var option = document.createElement('option');
+                            option.value = response.idList[i];
+                            option.text = response.typeList[i];
+                            select.add(option, 0);
+                        }
+                    }
+                });
+
+                $('#AddItemModal').modal({
+                    show: 'show'
+                });
+            }
+
+
+        }
+
+        function AddConfirmation() {
+            var trashName = document.getElementById("trashName").value;
+            var e = document.getElementById("trashId");
+            var trashId = e.options[e.selectedIndex].text;
+
+            if (trashName == "" || trashName == null) {
+
+                $('#error-modal-msg').html("Please provide a trash item name...");
+                $('#errorModal').modal({
+                    show: 'show'
+                }); 
+
+            }
+            else if (trashId == null || trashId == "select trash item") {
+                $('#error-modal-msg').html("Please select a measurement type...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+            else {
+
+                $('#confirm-modal-msg2').html("Are you sure you want to add this item ?");
+                $('#confirmModal2').modal({
+                    show: 'show'
+                });
+            }
+
+
+           
+        }
+
+        function AddNewItem() {
+            var itemName = document.getElementById("trashName").value;
+            var select = document.getElementById("trashId");
+            var itemType = select.options[select.selectedIndex].text;
+
+            //ajax function to save new item
+
+            $.ajax({
+                type: 'POST',
+                url: '/Home/AddTrashItem',
+                data: { itemName: itemName, itemType: itemType },
+
+                traditional: true,
+                success: function (response) {
+                    //success message - modal popup
+                    $('#success-modal-msg').html("Successfully added...");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                }
+            });
+        }
+
+        function showRemoveItemModal() {
+
+            var itmCount = document.getElementById("itmCount").value;
+            var existsMyCheck = document.getElementById("myCheck");
+            if (!existsMyCheck){
+                $.ajax({
+                    type: 'GET',
+                    url: '/Home/LoadTrashItems',
+                    traditional: true,
+                    success: function (response) {
+
+                        document.getElementById("itmCount").value = response.itemList.length;
+
+                        for (var i = 0; i < response.itemList.length; i++) {
+
+                            var checkbox = document.createElement('input');
+                            checkbox.type = "checkbox";
+                            checkbox.name = "myCheck";
+                            checkbox.value = response.itemList[i];
+                            checkbox.id = "myCheck";
+
+                            var label = document.createElement('label')
+                            label.htmlFor = "id";
+
+                            label.appendChild(document.createTextNode(response.itemList[i]));
+
+
+                            divCheckBox.appendChild(checkbox);
+                            divCheckBox.appendChild(label);
+
+                        }
+                    }
+                });
+            }
+ 
+
+            $('#RemoveItemModal').modal({
+                show: 'show'
+            });
+        }
+
+        function RemoveConfirmation() {
+            var itemList2 = [];
+
+            $.each($("input[name='myCheck']:checked"), function () {
+                itemList2.push($(this).val());
+            });
+
+            if (itemList2.length > 0) {
+                $('#confirm-modal-msg').html("Are you sure you want to remove this item ?");
+                $('#confirmModal').modal({
+                    show: 'show'
+                });
+            } else {
+                $('#error-modal-msg').html("Please select a trash item to delete...");
+                $('#errorModal').modal({
+                    show: 'show'
+                }); 
+            }
+        }
+
+
+        function RemoveItem() {
+            var itemList = [];
+
+            $.each($("input[name='myCheck']:checked"), function () {
+                itemList.push($(this).val());
+            });
+
+            //ajax function to remove item
+
+            $.ajax({
+                type: 'POST',
+                url: '/Home/RemoveTrashItem',
+                data: { itemList : itemList },
+
+                traditional: true,
+                success: function (response) {
+                    //success message - modal popup
+                    $('#success-modal-msg').html("Successfully deleted..");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                    
+                }
+            });
+        }
+    </script>
+
+    <!--testing codes for mapps-->
+
+    <script>
+        //var map;
+        //    function initMap() {
+        //       // var kandySrilanka = { lat: 7.291418, lng: 80.636696 };
+        //        var latlng = new google.maps.LatLng(7.291418, 80.636696);
+        //        var map = new google.maps.Map(document.getElementById('map'), {
+        //            zoom: 8,
+        //            center: latlng
+        //        });
+        //        var marker = new google.maps.Marker({
+        //            position: new google.maps.LatLng(7.291418, 80.636696),
+        //            map: map,
+        //            title: 'Click me'
+        //        });
+        //        var infowindow = new google.maps.InfoWindow({
+        //            content: 'Location info:<br/>Country Name:<br/>latlng:'
+
+        //            //here put company phone number , company name, actual address , garbage quantity
+        //        });
+        //        google.maps.event.addListener(marker, 'click', function () {
+        //            // Calling the open method of the infoWindow 
+        //            infowindow.open(map, marker);
+        //        });
+        //}
+
+        var map;
+        var directionsDisplay;
+        var directionsService = new google.maps.DirectionsService();
+
+        function initialize() {
+
+            directionsDisplay = new google.maps.DirectionsRenderer();
+            var latlng = new google.maps.LatLng(7.291418, 80.636696);
+
+            var myOptions = {
+                zoom: 8,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+            directionsDisplay.setMap(map);
+            //alert("222");
+            //directionsDisplay.setPanel(document.getElementById('directionpanel'));
+
+            //var control = document.getElementById('control');
+            //control.style.display = 'block';
+
+
+            
+
+
+            var marker = new google.maps.Marker
+                (
+                    {
+                        position: new google.maps.LatLng(7.291418, 80.636696),
+                        map: map,
+                        title: 'Click me'
+                     }
+                );
+            var infowindow = new google.maps.InfoWindow({
+                content: 'Location info:<br/>Country Name:<br/>LatLng:'
+            });
+            google.maps.event.addListener(marker, 'click', function () {
+                // Calling the open method of the infoWindow 
+                infowindow.open(map, marker);
+            });
+        }
+
+     
+        //window.onload = initialize;
+        function markicons() {
+            //alert("111");
+                initialize();
+                
+                //alert("333");
+
+
+
+
+                var ltlng = [];
+               
+                ltlng.push(new google.maps.LatLng(6.927079, 79.861244)); //colombo 
+                ltlng.push(new google.maps.LatLng(6.894070, 79.902481));  // jayawardanepura
+                ltlng.push(new google.maps.LatLng(6.053519, 80.220978));//galle
+                ltlng.push(new google.maps.LatLng(6.124593, 81.101074));//hambanthota
+                ltlng.push(new google.maps.LatLng(8.31223, 80.41306));//anuradhapura
+
+               
+
+                map.setCenter(ltlng[0]);
+                for (var i = 0; i <= ltlng.length; i++) {
+                    marker = new google.maps.Marker({
+                        map: map,
+                        position: ltlng[i]
+                    });
+
+                    (function (i, marker) {
+
+                        google.maps.event.addListener(marker, 'click', function () {
+
+                            if (!infowindow) {
+                                infowindow = new google.maps.InfoWindow();
+                            }
+
+                            infowindow.setContent("Message" + i);
+
+                            infowindow.open(map, marker);
+
+                        });
+
+                    })(i, marker);
+                }
+            }
+    </script>
+
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false">
+
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjPIuM96HaZWCNawYGnH-d6zMzbuiwRKg&callback=initMap">
+    </script>
+
+
+
+    <!-----------------------------------------------------Modal Poupus------------------------------------------------->
+   
+    <!--used for add new item -->
+    <div class="success modal modal fade" id="AddItemModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">New Trash Item</h4>
+                </div>
+                <div class="modal-body" id="divTestOption">
+                    <p style="margin-left:100px">
+                        <br />
+                        <b> Trash Item Name </b>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+                        <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="trashName" /> <br />
+                        <b>  Measurement Type</b> &nbsp;&nbsp;
+
+                        <select class="form-control width" id="trashId" name="trashId" style="width:200px;margin-top:-25px;margin-left:150px">
+                            @*<option>select trash item</option>*@
+                        </select>
+
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnAddItem" onclick="AddConfirmation()">Add Item</button>
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnC1">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <!--used for delete item-->
+    <div align="center" class="success modal modal fade" id="RemoveItemModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Remove Trash Item</h4>
+                </div>
+                <div class="modal-body" >
+                    <!--Load all trash item names-->
+                    <!-- allow to remove multiple trash items-->
+                    @*@foreach (var item in Model.sprintBacklog)
+                        {*@
+                    <ul class="todo-list ui-sortable" style="padding:3px;" >
+                        <li class="" id="divCheckBox">
+                            <!-- checkbox -->
+                            @*<div id="divCheckBox" style="">
+                              
+                            </div>*@
+                            <span id="t" style="font-size:13px;"></span>
+                        </li>
+                    </ul>
+                    @*}*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnR1" onclick="RemoveConfirmation()">Remove Item</button>
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnC2">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+   
+    <!--success Message-->
+    <div class="success modal modal fade" id="successModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-green" id="modalHead">
+                    <h4 class="modal-title">Success Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="success-modal-msg" style="font-size:15px;">message content here&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+   
+    <!--confirmation Message-->
+        <!--Delete item confirmation-->
+    <div class="success modal modal fade" id="confirmModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-yellow" id="modalHead">
+                    <h4 class="modal-title">Confirmation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-modal-msg" style="font-size:15px;">New Meeting is created&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="buttonOk1" onclick="RemoveItem()">OK</button>
+                    <button  type="button" class="btn btn-warning" data-dismiss="modal" id="modalBtn1">Cancel</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+        <!--Add Item Confirmation-->
+    <div class="success modal modal fade" id="confirmModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-yellow" id="modalHead">
+                    <h4 class="modal-title">Confirmation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-modal-msg2" style="font-size:15px;">New Meeting is created&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="buttonOk1" onclick="AddNewItem()">OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" id="modalBtn1">Cancel</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--error modal body-->
+    <div class="success modal modal fade" id="errorModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header  bg-red" id="modalHead">
+                    <h4 class="modal-title">Error Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="error-modal-msg" style="font-size:15px;">message content here&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="modalBtn">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+ </body>
+
+
