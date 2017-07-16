@@ -1,7 +1,9 @@
 # Eco-Garb-WebApplication
 This source code sample demonstrate the web dashboard which developed for recycling companies to manage their internal, external payments, basics, and to get suggested by the best route along with the garbage quantity, distance, traffic details and many other factors. Used technologies are ASP.NET MVC 5, Entity framework 6 
 
-Note: To get the latest version checkout to `develop` branch
+Note: 
+* To get the latest version checkout to `develop` branch
+**ddc
 
 ## Prerequisites
 1. MSSQL 
@@ -21,6 +23,8 @@ Note: To get the latest version checkout to `develop` branch
 7. After successful clone, open the folder(Eco-Garb-WebApplication), and you will find projects from the GitHub repository.
 
 ## Other instructions
+1. After following above process, you can start working on the project. You do canges if needed. can add new controllers, views, models,      scripts and anything needed.
+2. After doing 
 
 ## Preview hosted project
 project has been already published on AZURE server. please follow the below link. 
