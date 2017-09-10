@@ -24,6 +24,11 @@ namespace templateProj.Models
         public string ItemName8 { get; set; }
         public string ItemName9 { get; set; }
         public string ItemName10 { get; set; }
+        public string ItemName11 { get; set; }
+        public string ItemName12 { get; set; }
+        public string ItemName13 { get; set; }
+        public string ItemName14 { get; set; }
+        public string ItemName15 { get; set; }
 
 
         public string ItemType1 { get; set; }
@@ -36,6 +41,11 @@ namespace templateProj.Models
         public string ItemType8 { get; set; }
         public string ItemType9 { get; set; }
         public string ItemType10 { get; set; }
+        public string ItemType11 { get; set; }
+        public string ItemType12 { get; set; }
+        public string ItemType13 { get; set; }
+        public string ItemType14 { get; set; }
+        public string ItemType15 { get; set; }
 
         public string ItemUnitPrice1 { get; set; }
         public string ItemUnitPrice2 { get; set; }
@@ -47,5 +57,10 @@ namespace templateProj.Models
         public string ItemUnitPrice8 { get; set; }
         public string ItemUnitPrice9 { get; set; }
         public string ItemUnitPrice10 { get; set; }
+        public string ItemUnitPrice11 { get; set; }
+        public string ItemUnitPrice12 { get; set; }
+        public string ItemUnitPrice13 { get; set; }
+        public string ItemUnitPrice14 { get; set; }
+        public string ItemUnitPrice15 { get; set; }
     }
 }
