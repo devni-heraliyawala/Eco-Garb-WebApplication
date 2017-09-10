@@ -91,11 +91,6 @@ namespace templateProj.Controllers
             itemList.Add(trashItemsMeasurementList.ItemName8);
             itemList.Add(trashItemsMeasurementList.ItemName9);
             itemList.Add(trashItemsMeasurementList.ItemName10);
-            itemList.Add(trashItemsMeasurementList.ItemName11);
-            itemList.Add(trashItemsMeasurementList.ItemName12);
-            itemList.Add(trashItemsMeasurementList.ItemName13);
-            itemList.Add(trashItemsMeasurementList.ItemName14);
-            itemList.Add(trashItemsMeasurementList.ItemName15);
             return itemList;
         }
 
@@ -112,11 +107,6 @@ namespace templateProj.Controllers
             priceList.Add(trashItemsMeasurementList.ItemUnitPrice8);
             priceList.Add(trashItemsMeasurementList.ItemUnitPrice9);
             priceList.Add(trashItemsMeasurementList.ItemUnitPrice10);
-            priceList.Add(trashItemsMeasurementList.ItemUnitPrice11);
-            priceList.Add(trashItemsMeasurementList.ItemUnitPrice12);
-            priceList.Add(trashItemsMeasurementList.ItemUnitPrice13);
-            priceList.Add(trashItemsMeasurementList.ItemUnitPrice14);
-            priceList.Add(trashItemsMeasurementList.ItemUnitPrice15);
             return priceList;
         }
 
@@ -151,12 +141,7 @@ namespace templateProj.Controllers
                     ItemUnitPrice7 = unitPriceList[6],
                     ItemUnitPrice8 = unitPriceList[7],
                     ItemUnitPrice9 = unitPriceList[8],
-                    ItemUnitPrice10 = unitPriceList[9],
-                    ItemUnitPrice11 = unitPriceList[10],
-                    ItemUnitPrice12 = unitPriceList[11],
-                    ItemUnitPrice13 = unitPriceList[12],
-                    ItemUnitPrice14 = unitPriceList[13],
-                    ItemUnitPrice15 = unitPriceList[14],
+                    ItemUnitPrice10 = unitPriceList[9]
                 };
 
                 using (DataContext db2 = new DataContext())
@@ -172,11 +157,6 @@ namespace templateProj.Controllers
                     db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice8).IsModified = true;
                     db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice9).IsModified = true;
                     db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice10).IsModified = true;
-                    db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice11).IsModified = true;
-                    db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice12).IsModified = true;
-                    db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice13).IsModified = true;
-                    db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice14).IsModified = true;
-                    db2.Entry(trashItmMeasurement).Property(x => x.ItemUnitPrice15).IsModified = true;
                     db2.SaveChanges();
                 }
             }
