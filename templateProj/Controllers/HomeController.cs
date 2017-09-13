@@ -283,6 +283,11 @@ namespace templateProj.Controllers
             itemList.Add(trashItemsList.ItemName8);
             itemList.Add(trashItemsList.ItemName9);
             itemList.Add(trashItemsList.ItemName10);
+            itemList.Add(trashItemsList.ItemName11);
+            itemList.Add(trashItemsList.ItemName12);
+            itemList.Add(trashItemsList.ItemName13);
+            itemList.Add(trashItemsList.ItemName14);
+            itemList.Add(trashItemsList.ItemName15);
             return itemList;
         }
 
@@ -298,7 +303,7 @@ namespace templateProj.Controllers
 
                 finalItemLNameist.Add(itemName);
 
-                for (int i = finalItemLNameist.Count() - 1; i < 10; i++)
+                for (int i = finalItemLNameist.Count() - 1; i < 15; i++)
                 {
                     finalItemLNameist.Add(null);
                 }
@@ -328,7 +333,12 @@ namespace templateProj.Controllers
                 ItemName7 = itemNameList[6],
                 ItemName8 = itemNameList[7],
                 ItemName9 = itemNameList[8],
-                ItemName10 = itemNameList[9]
+                ItemName10 = itemNameList[9],
+                ItemName11 = itemNameList[10],
+                ItemName12 = itemNameList[11],
+                ItemName13 = itemNameList[12],
+                ItemName14 = itemNameList[13],
+                ItemName15 = itemNameList[14]
             };
 
             using (DataContext db = new DataContext())
@@ -344,6 +354,11 @@ namespace templateProj.Controllers
                 db.Entry(trashItem).Property(x => x.ItemName8).IsModified = true;
                 db.Entry(trashItem).Property(x => x.ItemName9).IsModified = true;
                 db.Entry(trashItem).Property(x => x.ItemName10).IsModified = true;
+                db.Entry(trashItem).Property(x => x.ItemName11).IsModified = true;
+                db.Entry(trashItem).Property(x => x.ItemName12).IsModified = true;
+                db.Entry(trashItem).Property(x => x.ItemName13).IsModified = true;
+                db.Entry(trashItem).Property(x => x.ItemName14).IsModified = true;
+                db.Entry(trashItem).Property(x => x.ItemName15).IsModified = true;
                 db.SaveChanges();
             }
         }
@@ -401,6 +416,11 @@ namespace templateProj.Controllers
             typeList.Add(trashItemsMeasurementList.ItemType8);
             typeList.Add(trashItemsMeasurementList.ItemType9);
             typeList.Add(trashItemsMeasurementList.ItemType10);
+            typeList.Add(trashItemsMeasurementList.ItemType11);
+            typeList.Add(trashItemsMeasurementList.ItemType12);
+            typeList.Add(trashItemsMeasurementList.ItemType13);
+            typeList.Add(trashItemsMeasurementList.ItemType14);
+            typeList.Add(trashItemsMeasurementList.ItemType15);
             return typeList;
         }
 
@@ -417,6 +437,11 @@ namespace templateProj.Controllers
             itemList.Add(trashItemsMeasurementList.ItemName8);
             itemList.Add(trashItemsMeasurementList.ItemName9);
             itemList.Add(trashItemsMeasurementList.ItemName10);
+            itemList.Add(trashItemsMeasurementList.ItemName11);
+            itemList.Add(trashItemsMeasurementList.ItemName12);
+            itemList.Add(trashItemsMeasurementList.ItemName13);
+            itemList.Add(trashItemsMeasurementList.ItemName14);
+            itemList.Add(trashItemsMeasurementList.ItemName15);
             return itemList;
         }
 
@@ -437,7 +462,12 @@ namespace templateProj.Controllers
                 ItemType7 = measurementTypeList[6],
                 ItemType8 = measurementTypeList[7],
                 ItemType9 = measurementTypeList[8],
-                ItemType10 = measurementTypeList[9]
+                ItemType10 = measurementTypeList[9],
+                ItemType11 = measurementTypeList[10],
+                ItemType12 = measurementTypeList[11],
+                ItemType13 = measurementTypeList[12],
+                ItemType14 = measurementTypeList[13],
+                ItemType15 = measurementTypeList[14]
             };
 
             using (DataContext db = new DataContext())
@@ -453,6 +483,11 @@ namespace templateProj.Controllers
                 db.Entry(trashItmMeasurement).Property(x => x.ItemType8).IsModified = true;
                 db.Entry(trashItmMeasurement).Property(x => x.ItemType9).IsModified = true;
                 db.Entry(trashItmMeasurement).Property(x => x.ItemType10).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemType11).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemType12).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemType13).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemType14).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemType15).IsModified = true;
                 db.SaveChanges();
             }
         }
@@ -474,7 +509,12 @@ namespace templateProj.Controllers
                 ItemName7 = itemNameList[6],
                 ItemName8 = itemNameList[7],
                 ItemName9 = itemNameList[8],
-                ItemName10 = itemNameList[9]
+                ItemName10 = itemNameList[9],
+                ItemName11 = itemNameList[10],
+                ItemName12 = itemNameList[11],
+                ItemName13 = itemNameList[12],
+                ItemName14 = itemNameList[13],
+                ItemName15 = itemNameList[14]
             };
 
             using (DataContext db = new DataContext())
@@ -490,6 +530,11 @@ namespace templateProj.Controllers
                 db.Entry(trashItmMeasurement).Property(x => x.ItemName8).IsModified = true;
                 db.Entry(trashItmMeasurement).Property(x => x.ItemName9).IsModified = true;
                 db.Entry(trashItmMeasurement).Property(x => x.ItemName10).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemName11).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemName12).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemName13).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemName14).IsModified = true;
+                db.Entry(trashItmMeasurement).Property(x => x.ItemName15).IsModified = true;
                 db.SaveChanges();
             }
         }
@@ -506,12 +551,12 @@ namespace templateProj.Controllers
             finalItemList.Add(itemName);
             finalTypeList.Add(itemType);
 
-            for (int i = finalItemList.Count() - 1; i < 10; i++)
+            for (int i = finalItemList.Count() - 1; i < 15; i++)
             {
                 finalItemList.Add(null);
             }
 
-            for (int i = finalTypeList.Count() - 1; i < 10; i++)
+            for (int i = finalTypeList.Count() - 1; i < 15; i++)
             {
                 finalTypeList.Add(null);
             }
