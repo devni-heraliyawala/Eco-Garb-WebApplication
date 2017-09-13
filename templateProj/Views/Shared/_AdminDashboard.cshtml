@@ -550,7 +550,52 @@
         function markicons() {
 
             initialize();
-          
+
+            // read the addresses and mark it on the map
+
+            //instead of this get the addresses from the database :) no need to valiudate the addresses,
+            //    validate it when customer registration
+
+            // here write an ajax function to get the company name, address and quantity list. and add those things to eperate arrays. 
+
+            var cnameList = ['Devni Home', 'Tangerine Beach Hotel', 'SLIIT', ''];
+            var addresses = ['257/11,Batadombathuduwa,Alubomulla, Panadura, Sri Lanka', 'Tangerine Beach Hotel, De Abrew Road, Waskaduwa', 'SLIIT, B263, Malabe 10115']
+            var qtyList = [150, 200, 2350];
+            var locationList = [];
+            var infowindow;
+            var j = 0;
+            var geocoder = new google.maps.Geocoder();
+            for (var i = 0; i < addresses.length; i++) {
+                geocoder.geocode({ "address": "'" + addresses[i] + "'" }, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
+
+                        var location = results[0].geometry.location;
+
+                        marker = new google.maps.Marker({
+                            map: map,
+                            position: location
+                        });
+
+
+                        (function (j, marker) {
+
+                            google.maps.event.addListener(marker, 'click', function () {
+
+                                if (!infowindow) {
+                                    infowindow = new google.maps.InfoWindow();
+                                }
+
+                                // here display customer company name, address and trash quantity
+                                infowindow.setContent('<h4>Company Name : ' + cnameList[j] + ' </h4> Address : ' + addresses[j] + '<br/>  Trash Qty. : ' + qtyList[j]);
+
+                                infowindow.open(map, marker);
+
+                            });
+
+                        })(j++, marker);
+                    }
+                });
+            }
             }
     </script>
 
