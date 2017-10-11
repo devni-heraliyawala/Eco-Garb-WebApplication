@@ -13,7 +13,12 @@ namespace templateProj.Controllers
         {
             return View();
         }
-        
-      
+
+        public ActionResult testSetSourceVertex()
+        {
+
+            return Json(new { addressList = true }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

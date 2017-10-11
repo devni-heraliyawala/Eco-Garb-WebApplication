@@ -22,8 +22,17 @@ namespace templateProj.Models
 
         public DbSet<UnitConversion> unitConversionModel { get; set; }
 
-        public DbSet<drivers> drivers { get; set; }
-        public DbSet<vehicles> vehicles { get; set; }
+        public DbSet<Drivers> drivers { get; set; }
 
+        public DbSet<Vehicles> vehicles { get; set; }
+
+        public DbSet<Trips> trips { get; set; }
+
+        public DbSet<Customer> customerModel { get; set; }
+        public DbSet<CustomerTrash> customerTrashModel { get; set; }
+
+        public DbSet<RecCompany> recCompanyModel { get; set; }
+
+        public DbSet<CustomerPayment> custPaymentModel { get; set; }
     }
 } 

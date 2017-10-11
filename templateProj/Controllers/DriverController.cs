@@ -41,16 +41,16 @@ namespace templateProj.Controllers
             }
             else
             {
-                drivers driver = new drivers();
-                driver.driverName = driverName;
+                Drivers driver = new Drivers();
+                driver.DriverName = driverName;
                 driver.NicID = NicID;
                 driver.DrivingLicenseID = drivingLicenseID;
-                driver.driverAge = age;
-                driver.yearsOfExperience = yearsOfExperience;
-                driver.contactNo = contactNo;
-                driver.driverStatus = "Unoccupied";
-                driver.workingHrsPerDay = 9;
-                driver.LeftWorkingHrs = 9;
+                driver.DriverAge = age;
+                driver.YearsOfExperience = yearsOfExperience;
+                driver.ContactNo = contactNo;
+                driver.DriverStatus = "Unoccupied";
+                driver.WorkingHrsPerDay = 9;
+                driver.LeftWorkingHrsPerDay = 9;
 
                 DataContext dc2 = new DataContext();
                 using (dc2)
@@ -66,44 +66,46 @@ namespace templateProj.Controllers
 
         public JsonResult getDriverDetails(int id)
         {
-            var driverDetails = db.drivers.Where(d => d.driverID == id).FirstOrDefault();
+            var driverDetails = db.drivers.Where(d => d.TableID == id).FirstOrDefault();
 
             string nicNo = driverDetails.NicID;
-            string driverName = driverDetails.driverName;
+            string driverName = driverDetails.DriverName;
             string drivingLicense = driverDetails.DrivingLicenseID;
-            int age = driverDetails.driverAge;
-            int experience = driverDetails.yearsOfExperience;
-            int contactNo = driverDetails.contactNo;
+            int age = driverDetails.DriverAge;
+            int experience = driverDetails.YearsOfExperience;
+            int contactNo = driverDetails.ContactNo;
 
             return Json(new { success = true, nicNo= nicNo,driverName = driverName, drivingLicense = drivingLicense, age = age, experience = experience, contactNo = contactNo }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult EditDriver(string EditdriverNIC,int EditdriverID, string EditdriverName, string EditdriverlicenseID,int EditdriverAge, int EditdriverExperience, int EditdriverContactNo)
         {
-            drivers driver = new drivers();
-            driver.driverName = EditdriverName;
-            driver.NicID = EditdriverNIC;
-            driver.DrivingLicenseID = EditdriverlicenseID;
-            driver.driverAge = EditdriverAge;
-            driver.yearsOfExperience = EditdriverExperience;
-            driver.contactNo = EditdriverContactNo;
-            driver.driverID = EditdriverID;
-
-            FormHandlingLayer fhl = new FormHandlingLayer();
-            fhl.EditDriverInformation(driver);
-
+            using (var db = new DataContext())
+            {
+                var driverResult = db.drivers.Where(d => d.TableID == EditdriverID).FirstOrDefault();
+                driverResult.DriverName = EditdriverName;
+                driverResult.NicID = EditdriverNIC;
+                driverResult.DrivingLicenseID = EditdriverlicenseID;
+                driverResult.DriverAge = EditdriverAge;
+                driverResult.YearsOfExperience = EditdriverExperience;
+                driverResult.ContactNo = EditdriverContactNo;
+                db.SaveChanges();
+            }
+            
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
 
         }
 
         public JsonResult DeleteDriver(int deleteDriverID)
         {
-            drivers driver = new drivers();
-            driver.driverID = deleteDriverID;
+            using (var db = new DataContext())
+            {
+                var driverResult = db.drivers.Where(d => d.TableID == deleteDriverID).FirstOrDefault();
+                db.drivers.Remove(driverResult);
+                db.SaveChanges();
 
-            FormHandlingLayer fhl = new FormHandlingLayer();
-            fhl.DeleteDriver(driver);
-
+            }
+            
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 

@@ -15,6 +15,7 @@ namespace templateProj.Controllers
     {
         DataContext db = new DataContext();
         // GET: CustomerPayment
+        #region Load Unit Prices
         public ActionResult CustomerPayment()
         {
             string uname = HttpContext.Session["Uname"].ToString();
@@ -23,6 +24,15 @@ namespace templateProj.Controllers
             HomeViewModel homeViewModel = new HomeViewModel();
             homeViewModel.usermodel = um;
 
+            var unameList = db.customerModel.Where(c => c.RecyCompanyName == um.CompanyName).Select(n => n.Username).ToList();
+            List<CustomerPayment> newPaymentModel = new List<CustomerPayment>();
+            for (int i = 0; i < unameList.Count; i++)
+            {
+                var userName = unameList[i];
+
+                newPaymentModel.Add(db.custPaymentModel.Where(u => u.Username == userName).OrderByDescending(t => t.TableID).FirstOrDefault());
+            }
+            homeViewModel.custPaymentModel = newPaymentModel;
             return View(homeViewModel);
         }
 
@@ -120,7 +130,9 @@ namespace templateProj.Controllers
             return priceList;
         }
 
+        #endregion
 
+        #region Save Unit Prices
         [HttpPost]
         public ActionResult SaveUnitPriceValues(string[] unitPriceList)
         {
@@ -131,7 +143,9 @@ namespace templateProj.Controllers
 
             return Json(new { res = true }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+        #region Update Unit Prices
         public void UpdateUnitPriceList(string[] unitPriceList, UserModel um)
         {
             var trashItemsMeasurementList = db.trashMeasurementModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
@@ -186,5 +200,127 @@ namespace templateProj.Controllers
                 Debug.WriteLine(ex.Message);
             }
         }
+
+        #endregion
+
+        #region Find Trash Item Details by temp ID
+
+        public ActionResult FindTrashItemDetails(int id)
+        {
+            string uname = HttpContext.Session["Uname"].ToString();
+            UserModel um = db.Umodel.Find(uname);
+            HomeController hc = new HomeController();
+            RoutingAlgoController ra = new RoutingAlgoController();
+
+            var custUsername = db.custPaymentModel.Where(o => o.TableID == id).Select(u => u.Username).FirstOrDefault();
+            var trashItemsList = db.trashItemModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
+            var typeList = db.trashMeasurementModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
+            var qtyList = db.customerTrashModel.Where(u => u.Username == custUsername).OrderByDescending(t=>t.TableID).FirstOrDefault();
+
+            List<string> finalItemLNameist = hc.FindItemList(trashItemsList);
+            List<string> finalTypeList = hc.FindTrashTypeList(typeList);
+            List<int> finalQtyList = ra.FindTrashQtyList(qtyList);
+
+            var companyName = db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().CompanyName + " - " + db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().Branch;
+            var totQty = db.customerTrashModel.Where(u => u.Username == custUsername).OrderByDescending(t => t.TableID).Select(q=>q.TotalQty).FirstOrDefault();
+            var qtySummary = "Total Latest Quantity : " + totQty.ToString();
+            return Json(new { qtySummary= qtySummary, companyName = companyName, typeList = finalTypeList, itemList = finalItemLNameist, qtyList = finalQtyList }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        #endregion
+
+        #region Find Customer Payment Details by table ID
+
+        public ActionResult FindPaymentDetails(int id)
+        {
+            var custUsername = db.custPaymentModel.Where(o => o.TableID == id).Select(u => u.Username).FirstOrDefault();
+
+            var companyName = db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().CompanyName + " - " + db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().Branch;
+            var totQty = db.customerTrashModel.Where(u => u.Username == custUsername).OrderByDescending(t => t.TableID).Select(q => q.TotalQty).FirstOrDefault();
+            var qtySummary = "Total Latest Quantity : " + totQty.ToString();
+            var paymentDate = db.custPaymentModel.Where(t=>t.TableID ==id).Select(d=>d.PaymentDate).FirstOrDefault();
+            var paymentStatus = db.custPaymentModel.Where(t => t.TableID == id).Select(s=>s.PaymentStatus).FirstOrDefault();
+            var amount = db.custPaymentModel.Where(t => t.TableID == id).Select(d => d.TotalAmount).FirstOrDefault();
+            List<string> paymentDetails = new List<string>();
+
+            paymentDetails.Add(companyName);
+            paymentDetails.Add(qtySummary);
+            paymentDetails.Add(paymentDate);
+            paymentDetails.Add(paymentStatus);
+            paymentDetails.Add(amount.ToString());
+
+
+            return Json(new { paymentDetails = paymentDetails },JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
+
+        #region Proceed the Payment
+        [HttpPost]
+        public ActionResult ProceedPayment(int id)
+        {
+            try
+            {
+                var payment = new CustomerPayment() {TableID = id,PaymentDate = DateTime.Now.ToString("yyyy-MM-dd"),PaymentStatus = "Proceed" };
+                Console.Write("ppppp : "+payment.PaymentDate);
+                using (DataContext dc3 =new DataContext())
+                {
+                    db.custPaymentModel.Attach(payment);
+                    db.Entry(payment).Property(p=>p.PaymentDate).IsModified = true;
+                    db.Entry(payment).Property(p => p.PaymentStatus).IsModified = true;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Console.Write(ex.Message);
+                Debug.WriteLine(ex.Message);
+            }
+
+            return Json(new{ response = true},JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Monthly Amount report 
+        public ActionResult AmountReport(int id)
+        {
+            string uname = HttpContext.Session["Uname"].ToString();
+            UserModel um = db.Umodel.Find(uname);
+            HomeController hc = new HomeController();
+            RoutingAlgoController ra = new RoutingAlgoController();
+
+            var custUsername = db.custPaymentModel.Where(o => o.TableID == id).Select(u => u.Username).FirstOrDefault();
+            var trashItemsList = db.trashItemModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
+            var typeList = db.trashMeasurementModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
+            var qtyList = db.customerTrashModel.Where(u => u.Username == custUsername).OrderByDescending(t => t.TableID).FirstOrDefault();
+
+            List<string> finalItemLNameist = hc.FindItemList(trashItemsList);
+            List<string> finalTypeList = hc.FindTrashTypeList(typeList);
+            List<int> finalQtyList = ra.FindTrashQtyList(qtyList);
+            List<string> finalUnitPriceList = FindUnitPriceList(typeList);
+            List<string> amountList = new List<string>();
+
+            var totAmount = 0.0;
+            for (int i = 0; i < finalItemLNameist.Count; i++)
+            {
+                var currentAmt = finalQtyList[i] * Convert.ToDouble(finalUnitPriceList[i]);
+                totAmount = totAmount + currentAmt;
+                amountList.Add("    =    "+ currentAmt.ToString());
+            }
+
+            var companyName = db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().CompanyName + " - " + db.custPaymentModel.Where(i => i.TableID == id).FirstOrDefault().Branch;
+            var totAmt = db.custPaymentModel.Where(t=>t.TableID == id).Select(a=>a.TotalAmount).FirstOrDefault();
+            var amountSummary = "Total Amount (Rs.) : " + totAmount.ToString();
+
+
+
+            return Json(new { amountList = amountList, amountSummary = amountSummary, companyName = companyName, typeList = finalTypeList, itemList = finalItemLNameist, qtyList = finalQtyList,unitPriceList= finalUnitPriceList }, JsonRequestBehavior.AllowGet);
+
+        }
+        #endregion
+
+
     }
 }

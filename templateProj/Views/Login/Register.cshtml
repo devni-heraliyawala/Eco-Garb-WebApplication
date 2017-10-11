@@ -61,6 +61,11 @@
                     <span class=" glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
 
+                <div class="form-group has-feedback" id="divRecAddress">
+                    <input type="text" class="form-control" placeholder="Recycling Company Address" id="recAddress" name="recAddress" oninput="recAddressValidation()">
+                    <span class=" glyphicon glyphicon-map-marker form-control-feedback"></span>
+                </div>
+
                 <div class="row">
                     <div class="col-xs-4">
                         <input type="text" class="form-control" placeholder="Prefix" id="prefix" disabled>
@@ -172,6 +177,18 @@
             }
         }
 
+        function recAddressValidation() {
+            var exists = document.getElementById("recAddressValidate");
+            if (exists) {
+                //error occured
+                // remove it 
+                var parent = document.getElementById("divRecAddress");
+                var child = document.getElementById("recAddressValidate");
+                parent.removeChild(child);
+                document.getElementById("recAddress").style.borderColor = "initial";
+            }
+        }
+
         function getFullUsername() {
             var exists = document.getElementById("userNameValidate");
             if (exists) {
@@ -241,6 +258,7 @@
         function formValidation() {
             var cmpName = document.getElementById("companyName").value;
             var fullname = document.getElementById("fullName").value;
+            var recAddress = document.getElementById("recAddress").value;
             var username = document.getElementById("username").value;
             var email = document.getElementById("email").value;
             var password = document.getElementById("password").value;
@@ -249,6 +267,7 @@
 
             var exCmp = document.getElementById("cmpNameValidate");
             var exFname = document.getElementById("fullNameValidate");
+            var exRecAddr = document.getElementById("recAddressValidate");
             var exUname = document.getElementById("userNameValidate");
             var exEmail = document.getElementById("emailValidate");
             var exPass = document.getElementById("passwordValidate");
@@ -271,21 +290,37 @@
 
             }
 
-             if (fullname == null || fullname == "") {
+            if (recAddress == null || recAddress == "") {
                 var para = document.createElement("p");
-                para.setAttribute("id", "fullNameValidate")
-                var node = document.createTextNode("please enter the full name");
+                para.setAttribute("id", "recAddressValidate")
+                var node = document.createTextNode("please enter the company address");
                 para.appendChild(node);
-                var element = document.getElementById("divFullName");
+                var element = document.getElementById("divRecAddress");
                 element.appendChild(para);
 
-                var child = document.getElementById("fullNameValidate");
+                var child = document.getElementById("recAddressValidate");
                 element.replaceChild(para, child);
 
-                document.getElementById("fullNameValidate").style.color = "red";
-                document.getElementById("fullName").style.borderColor = "red";
+                document.getElementById("recAddressValidate").style.color = "red";
+                document.getElementById("recAddress").style.borderColor = "red";
 
             }
+
+             if (fullname == null || fullname == "") {
+                 var para = document.createElement("p");
+                 para.setAttribute("id", "fullNameValidate")
+                 var node = document.createTextNode("please enter the full name");
+                 para.appendChild(node);
+                 var element = document.getElementById("divFullName");
+                 element.appendChild(para);
+
+                 var child = document.getElementById("fullNameValidate");
+                 element.replaceChild(para, child);
+
+                 document.getElementById("fullNameValidate").style.color = "red";
+                 document.getElementById("fullName").style.borderColor = "red";
+
+             }
 
              if (username == null || username == "") {
                 var para = document.createElement("p");
@@ -453,10 +488,11 @@
             //    document.getElementById("agree").style.borderColor = "initial";
             // }
 
-             if (!exCmp && !exFname && !exUname && !exEmail && !exPass && !exCpass && chkBox.checked) {
+             if (!exCmp && !exFname && !exRecAddr && !exUname && !exEmail && !exPass && !exCpass && chkBox.checked) {
                  // save to db using ajax
                  var companyName = document.getElementById("companyName").value;
-                 var fullName = document.getElementById("fullName").value;
+                 var fullName = document.getElementById("fullName").value; 
+                 var recAddress = document.getElementById("recAddress").value; 
                  var fullUsername = document.getElementById("fullUsername").value;
                  var email = document.getElementById("email").value;
                  var confirmPassword = document.getElementById("confirmPassword").value;
@@ -464,7 +500,7 @@
                  $.ajax({
                      type: 'POST',
                      url: '/Login/Register',
-                     data: { companyName: companyName, fullName: fullName, fullUsername: fullUsername, email: email, confirmPassword: confirmPassword },
+                     data: { companyName: companyName, fullName: fullName, recAddress: recAddress, fullUsername: fullUsername, email: email, confirmPassword: confirmPassword },
                      traditional: true,
                      success: function (response) {
 

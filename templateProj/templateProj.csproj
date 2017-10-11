@@ -21,6 +21,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -204,6 +205,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CalenderController.cs" />
     <Compile Include="Controllers\CustomerPaymentController.cs" />
+    <Compile Include="Controllers\CustomerRatingsController.cs" />
+    <Compile Include="Controllers\DijkstrasController.cs" />
     <Compile Include="Controllers\DriverController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\Encrypt.cs" />
@@ -211,8 +214,10 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\RoutingAlgoController.cs" />
     <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\testController.cs" />
+    <Compile Include="Controllers\TripController.cs" />
     <Compile Include="Controllers\VehicleController.cs" />
     <Compile Include="Filters\AdminFilter.cs" />
     <Compile Include="Filters\DeveloperFilter.cs" />
@@ -223,21 +228,28 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\CustomerPayment.cs" />
+    <Compile Include="Models\CustomerTrash.cs" />
     <Compile Include="Models\DataContext.cs" />
-    <Compile Include="Models\drivers.cs" />
-    <Compile Include="Models\FormHandlingLayer.cs" />
+    <Compile Include="Models\Drivers.cs" />
+    <Compile Include="Models\Edge.cs" />
+    <Compile Include="Models\Graph.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MeasurementTypes.cs" />
     <Compile Include="Models\MessageServices.cs" />
+    <Compile Include="Models\RecCompany.cs" />
     <Compile Include="Models\SendMailModel.cs" />
     <Compile Include="Models\TrashItem.cs" />
     <Compile Include="Models\TrashItemMeasurements.cs" />
+    <Compile Include="Models\Trips.cs" />
     <Compile Include="Models\UnitConversion.cs" />
     <Compile Include="Models\UserContext.cs" />
     <Compile Include="Models\UserModel.cs" />
-    <Compile Include="Models\vehicles.cs" />
+    <Compile Include="Models\Vector2D.cs" />
+    <Compile Include="Models\Vehicles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1147,7 +1159,10 @@
     <Content Include="Views\test\test.cshtml" />
     <Content Include="Views\Calender\Index.cshtml" />
     <Content Include="Views\Driver\DriverProfiles.cshtml" />
+    <Content Include="Views\Trip\FuelManagement.cshtml" />
+    <Content Include="Views\Trip\TripDataProfile.cshtml" />
     <Content Include="Views\Vehicle\VehicleProfile.cshtml" />
+    <Content Include="Views\CustomerRatings\CustomerRatings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -1161,6 +1176,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Dijkstras\" />
+    <Folder Include="Views\RoutingAlgo\" />
     <Folder Include="Views\UtempData\" />
   </ItemGroup>
   <ItemGroup>

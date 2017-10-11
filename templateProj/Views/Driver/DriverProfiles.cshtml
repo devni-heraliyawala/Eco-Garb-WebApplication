@@ -118,26 +118,41 @@ desired effect
                                                     <a href="#">@item.NicID</a>
                                                 </td>
                                                 <td>
-                                                    @item.driverName
+                                                    @item.DriverName
                                                 </td>
                                                 <td>@item.DrivingLicenseID</td>
-                                                <td>@item.driverAge</td>
+                                                <td>@item.DriverAge</td>
                                                 <td>
-                                                    @item.yearsOfExperience
+                                                    @item.YearsOfExperience
                                                 </td>
-                                                <td>
-                                                    @item.driverStatus
-                                                </td>
+                                                @if (item.DriverStatus == "Not Available")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-danger">@item.DriverStatus</small>
+                                                    </td>
+                                                }
+                                                @if (item.DriverStatus == "Unoccupied")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-warning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@item.DriverStatus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
+                                                @if (item.DriverStatus == "Occupied")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@item.DriverStatus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
                                                 <td>
                                                     <div class="tools">
 
-                                                        <a href="#" onclick="ShowEditDriverInformation(@item.driverID)"><i class="fa fa-edit"></i></a>
+                                                        <a href="#" onclick="ShowEditDriverInformation(@item.TableID)"><i class="fa fa-edit"></i></a>
 
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="tools">
-                                                        <a href="#" onclick="ShowDeleteDriver(@item.driverID)"><i class="fa fa-trash-o" style="color:red;"></i></a>
+                                                        <a href="#" onclick="ShowDeleteDriver(@item.TableID)"><i class="fa fa-trash-o" style="color:red;"></i></a>
 
 
                                                     </div>
@@ -167,26 +182,35 @@ desired effect
                             <h3 class="box-title">Add new Driver</h3>
                         </div>
                         <div class="box-body">
-                            <b> Driver Name </b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="driverName" /> <br />
 
-                            <b>NIC No</b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="NicID" /> <br />
+                                <div class="form-group has-feedback" id="divDriverName">
+                                <b> Driver Name </b>
+                                <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="driverName" oninput="checkDriverName()"/>
+                                <span id="validateDriverName" style="margin-top:-1px;margin-left:120px"></span>
+                                </div>
 
-                            <b> Driving License ID</b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="drivingLicenseID" /> <br />
-
-                            <b> Age</b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="age" /> <br />
-
-                            <b>Years of Experience</b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="yearsOfExperience" /> <br />
-
-                            <b>Contact Number</b>
-                            <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="contactNo" /> <br />
-
-                            <button class="btn btn-block btn-success pull-right" style="background-color:seagreen; width:150px; margin-right:20px;" onclick="addDrivers()">Add Driver</button>
-                        </div><!-- /.box-body -->
+                                <div class="form-group has-feedback" id="divNicNo">
+                                    <b>NIC No</b>
+                                    <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="NicID" /> <br />
+                                </div>
+                                <div class="form-group has-feedback" id="divDrivingLicenseID">
+                                    <b> Driving License ID</b>
+                                    <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="drivingLicenseID" /> <br />
+                                </div>
+                                <div class="form-group has-feedback" id="divAge">
+                                    <b> Age</b>
+                                    <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="age" /> <br />
+                                </div>
+                                <div class="form-group has-feedback" id="divYearsOfExperience">
+                                    <b>Years of Experience</b>
+                                    <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="yearsOfExperience" /> <br />
+                                </div>
+                                <div class="form-group has-feedback" id="divContactNo">
+                                    <b>Contact Number</b>
+                                    <input type="text" class="form-control width" style="width:190px;margin-top:-25px;margin-left:120px" id="contactNo" /> <br />
+                                </div>
+                                <button class="btn btn-block btn-success pull-right" style="background-color:seagreen; width:150px; margin-right:20px;" onclick="addDrivers()">Add Driver</button>
+                            </div><!-- /.box-body -->
                     </div>
 
                 </div>
@@ -569,7 +593,7 @@ desired effect
 </body>
 </html>
 <script>
-      function addDrivers() {
+    function addDrivers() {
           console.log("addDrivers");
           var driverName = document.getElementById('driverName').value;
           var NicID = document.getElementById('NicID').value;
@@ -900,6 +924,45 @@ desired effect
 
               }
           });
+      }
+
+      function xaddDrivers()
+      {
+          alert("came here");
+          var driverName = document.getElementById('driverName').value;
+          var NicID = document.getElementById('NicID').value;
+          var drivingLicenseID = document.getElementById('drivingLicenseID').value;
+          var age = document.getElementById('age').value;
+          var yearsOfExperience = document.getElementById('yearsOfExperience').value;
+          var contactNo = document.getElementById('contactNo').value;
+
+          if (driverName == "" || driverName == null)
+          {
+              document.getElementById('validateDriverName').innerText = "please enter the driver name";
+              document.getElementById("driverName").style.borderColor = "red";
+              document.getElementById("validateDriverName").style.color = "red";
+              
+          }
+         
+
+      }
+
+      function checkDriverName()
+      {
+          var driverName = document.getElementById('driverName').value;
+
+          if (driverName == "" || driverName == null) {
+              document.getElementById('validateDriverName').innerText = "please enter the driver name";
+              document.getElementById("driverName").style.borderColor = "red";
+              document.getElementById("validateDriverName").style.color = "red";
+
+          }
+          else
+          {
+              document.getElementById('validateDriverName').innerText = "";
+              document.getElementById("driverName").style.borderColor = "";
+              document.getElementById("validateDriverName").style.color = "red";
+          }
       }
 </script>
 

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using System.Xml.Linq;
 using templateProj.Models;
 using templateProj.Property;
 
@@ -27,7 +29,7 @@ namespace templateProj.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(string companyName, string fullName, string fullUsername, string email, string confirmPassword)
+        public ActionResult Register(string companyName, string fullName,string recAddress, string fullUsername, string email, string confirmPassword)
         {
             try
             {
@@ -59,6 +61,8 @@ namespace templateProj.Controllers
                     CreateDefaultMeasurementTypes(companyName);
 
                     CreateDefaultUnitConversions(companyName);
+
+                    CreateCompanyGeoCoordinates(companyName,recAddress);
                 }
                 // else register the user only
                 DataContext dc3 = new DataContext();
@@ -161,7 +165,7 @@ namespace templateProj.Controllers
                 UnitConversion defaultUnitConversions = new UnitConversion();
 
                 defaultUnitConversions.CompanyName = companyName;
-                defaultUnitConversions.MeasurementType1 = "Bottel";
+                defaultUnitConversions.MeasurementType1 = "Bottle";
                 defaultUnitConversions.Units1 = "0.5";
 
                 defaultUnitConversions.MeasurementType2 = "Kilogram";
@@ -175,6 +179,44 @@ namespace templateProj.Controllers
                 {
                     dc5.unitConversionModel.Add(defaultUnitConversions);
                     dc5.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void CreateCompanyGeoCoordinates(string companyName, string recAddress)
+        {
+            try
+            {
+                DataContext dc6 = new DataContext();
+                RecCompany recCompanyDetails = new RecCompany();
+                //var address = "123 something st, somewhere";
+                var requestUri = string.Format("http://maps.googleapis.com/maps/api/geocode/xml?address={0}&sensor=false", Uri.EscapeDataString(recAddress));
+
+                var request = WebRequest.Create(requestUri);
+                var response = request.GetResponse();
+                var xdoc = XDocument.Load(response.GetResponseStream());
+
+                var result = xdoc.Element("GeocodeResponse").Element("result");
+                var locationElement = result.Element("geometry").Element("location");
+                var lat = locationElement.Element("lat");
+                var lng = locationElement.Element("lng");
+
+                recCompanyDetails.RecCompanyName = companyName;
+                recCompanyDetails.Address = recAddress;
+                recCompanyDetails.Lat = lat.ToString().Replace("<lat>","").Replace("</lat>","");
+                recCompanyDetails.Lng = lng.ToString().Replace("<lng>", "").Replace("</lng>", "");
+
+
+                Console.WriteLine("lat : " + lat + "  lng: " + lng);
+
+                using (dc6)
+                {
+                    dc6.recCompanyModel.Add(recCompanyDetails);
+                    dc6.SaveChanges();
                 }
             }
             catch (Exception ex)

@@ -59,25 +59,31 @@ namespace templateProj.Controllers
             UserModel um = db.Umodel.Find(uname);
 
             //var trashItemsMeasurementList = db.trashMeasurementModel.Where(c => c.CompanyName == um.CompanyName).Select(k =>k.)
+            List<string> finalItemList, finalTypeList, finalUnitTypeList, finalUnitValueList;
+
+            LoadTrashItemNamesTypesUnitConversions(um, out finalItemList, out finalTypeList, out finalUnitTypeList, out finalUnitValueList);
+
+            return Json(new { itemList = finalItemList, typeList = finalTypeList, unitTypeList = finalUnitTypeList, unitValueList = finalUnitValueList }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public void LoadTrashItemNamesTypesUnitConversions(UserModel um, out List<string> finalItemList, out List<string> finalTypeList, out List<string> finalUnitTypeList, out List<string> finalUnitValueList)
+        {
             var trashItemsMeasurementList = db.trashMeasurementModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
 
             var unitConversionList = db.unitConversionModel.Where(c => c.CompanyName == um.CompanyName).FirstOrDefault();
 
             //for trash measurement
 
-            List<string> finalItemList = FindTrashItemList(trashItemsMeasurementList);
-
-            List<string> finalTypeList = FindTrashTypeList(trashItemsMeasurementList);
+            finalItemList = FindTrashItemList(trashItemsMeasurementList);
+            finalTypeList = FindTrashTypeList(trashItemsMeasurementList);
 
             //for unit converion 
 
-            List<string> finalUnitTypeList = FindUnitTypeList(unitConversionList);
-
-            List<string> finalUnitValueList = FindUnitValueList(unitConversionList);
-
-            return Json(new { itemList = finalItemList, typeList = finalTypeList, unitTypeList= finalUnitTypeList, unitValueList= finalUnitValueList }, JsonRequestBehavior.AllowGet);
-
+            finalUnitTypeList = FindUnitTypeList(unitConversionList);
+            finalUnitValueList = FindUnitValueList(unitConversionList);
         }
+
         public ActionResult EditTrashMeasurementTypes()
         {
             var measurementTypeList = db.measurementTypesModel.Select(t => t.MeasurementType1).ToList();
@@ -252,7 +258,7 @@ namespace templateProj.Controllers
         #region Common Functions
 
         #region Functions Related to "Trash Items" Table
-        private List<string> FindItemList(TrashItems trashItemsList)
+        public List<string> FindItemList(TrashItems trashItemsList)
         {
 
             List<string> finalItemList = new List<string>();

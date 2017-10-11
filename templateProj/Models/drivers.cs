@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace templateProj.Models
 {
-    [Table("drivers")]
-    public class drivers
+    [Table("Drivers")]
+    public class Drivers
     {
-        [Key]
-        public int driverID { get; set; }
-        public string NicID { get; set; }
-
-        public string DrivingLicenseID { get; set; }
         
-        public string driverName { get; set; }
-        public int driverAge { get; set; }
-        public int contactNo { get; set; }
-        public string driverStatus { get; set; }
-        public int yearsOfExperience { get; set; }
-        public int workingHrsPerDay { get; set; }
-        public int LeftWorkingHrs { get; set; }
+            [Key]
+            public int TableID { get; set; }
+            public string NicID { get; set; }
+
+            public string DrivingLicenseID { get; set; }
+
+            public string DriverName { get; set; }
+            public int DriverAge { get; set; }
+            public int ContactNo { get; set; }
+            public string DriverStatus { get; set; }
+            public int YearsOfExperience { get; set; }
+            public int WorkingHrsPerDay { get; set; }
+            public int LeftWorkingHrsPerDay { get; set; }
+        
     }
 }

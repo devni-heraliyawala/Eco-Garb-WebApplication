@@ -1,0 +1,424 @@
+﻿@model templateProj.Models.HomeViewModel
+@{
+    Layout = null;
+    string ProPicPath = Model.usermodel.ProfilePic;
+    string Uname = Model.usermodel.Username;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Eco-Garb | Starter</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="../../Styles/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../Styles/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect.
+    -->
+    <link rel="stylesheet" href="../../Styles/dist/css/skins/skin-blue.min.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        <!-- Rendering the partial view for the navigation bar-->
+        @Html.Partial("_AdminNavigation", Model.usermodel);
+        <div class="content-wrapper" style="margin-top:-20px">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    Customer Ratings
+                    <small></small>
+                </h1>
+            </section>
+            <ol class="breadcrumb" style="left:100px ; top:50px ; background-color:transparent">
+                <li><a href="@Url.Action("Home", "Home" )" style="color:seagreen"><i class="fa fa-dashboard" style="color:seagreen"></i> Home</a></li>
+                <li class="active">Customer Ratings</li>
+            </ol>
+            <!-- Main content -->
+            <section class="content">
+                <div class=" col-md-12">
+                    <div class="box box-success">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">All Ratings</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="box-body table-responsive no-padding">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Company Name</th>
+                                            <th>Service Rating <small>(by Customer)</small></th>
+                                            <th>Customer Rating</th>
+                                            <th> Rate Customer</th>
+                                            <th>Total Qty</th>
+                                        </tr>
+
+                
+
+                                        @foreach (var item in Model.customerModel)
+                                        { 
+                                            <tr>
+                                                <td><a href="#">@item.TableID</a></td>
+                                                <td> @item.CompanyName  - @item.Branch </td>
+
+                                                @if (item.Customer_Rate_Company == "DELIGHT")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-success">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@item.Customer_Rate_Company&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
+                                                @if (item.Customer_Rate_Company == "HAPPY")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-primary">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@item.Customer_Rate_Company&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
+                                                @if (item.Customer_Rate_Company == "OK")
+                                                {
+                                                    <td style="font-size:medium;width:200px">
+                                                        <small class="label label-warning"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @item.Customer_Rate_Company&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </small>
+                                                    </td>
+                                                }
+                                                @if (item.Customer_Rate_Company == "BAD")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@item.Customer_Rate_Company&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
+                                                @if (item.Company_Rate_Customer == "5 Star")
+                                                {
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:cadetblue;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Change Rating</button> &nbsp;</td>
+                                                }
+                                                @if (item.Company_Rate_Customer == "4 Star")
+                                                {
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:cadetblue;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Change Rating</button> &nbsp;</td>
+                                                }
+
+                                                @if (item.Company_Rate_Customer == "3 Star")
+                                                {
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:cadetblue;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Change Rating</button> &nbsp;</td>
+                                                }
+                                                @if (item.Company_Rate_Customer == "2 Star")
+                                                {
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:cadetblue;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Change Rating</button> &nbsp;</td>
+                                                }
+                                                @if (item.Company_Rate_Customer == "1 Star")
+                                                {
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:darkcyan;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:cadetblue;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Change Rating</button> &nbsp;</td>
+                                                }
+                                                @if (item.Company_Rate_Customer != "1 Star" && item.Company_Rate_Customer != "2 Star" && item.Company_Rate_Customer != "3 Star" && item.Company_Rate_Customer != "4 Star" && item.Company_Rate_Customer != "5 Star")
+                                                {
+                                                    <td style="color:orangered;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:orangered;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:orangered;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:orangered;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td style="color:orangered;" class="glyphicon glyphicon-star-empty"> </td>
+                                                    <td><button type="button" onclick="ShowEditRating(@item.TableID)" style="font-weight:600;color:orangered;text-decoration:underline;background:none;border:none;width:120px;" id="@item.TableID">Rate Customer</button> &nbsp;</td>
+                                                }
+                                                <td><button type="button" onclick="ShowTrashQtys(@item.TableID)" style="font-weight:500;color:green;text-decoration:underline;background:none;border:none;" id="@item.TableID">View Quantity Report</button> &nbsp;</td>
+  
+                                            </tr>
+                                        }
+                                        <tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </div>
+
+                <!-- Your Page Content Here -->
+            </section><!-- /.content -->
+        </div><!-- /.content-wrapper -->
+        <!--Rendering the partial view for the footer-->
+        @Html.Partial("_ManagerFooter");
+
+    </div><!-- ./wrapper -->
+    <!-- REQUIRED JS SCRIPTS -->
+    <!-- jQuery 2.1.4 -->
+    <script src="../../Styles/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="../../Styles/bootstrap/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../Styles/dist/js/app.min.js"></script>
+    <!-- Optionally, you can add Slimscroll and FastClick plugins.
+         Both of these plugins are recommended to enhance the
+         user experience. Slimscroll is required when using the
+         fixed layout. -->
+
+
+    <!--Scripts for Customer Ratings-->
+    <script>
+        function ShowEditRating(id) {
+            console.log("came here");
+            $("#EditRatingModal").modal('show');
+            $.ajax({
+                url: '/CustomerRatings/GetRatingDetails',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id },
+                success: function (response) {
+                    console.log(response.companyName);
+                    $('#EditRateID').val(id);
+                    $('#EditRateCompany').val(response.companyName);
+                    $('#EditRateService').val(response.serviceRate);
+                    $('#EditRateQty').val(response.qty); 
+                    $('#EditRateCust').val(response.custRate); 
+                }
+            });
+        }
+        function ConfirmationRateInfo() {
+            $("#RatingConfirmation").modal('show');
+        }
+
+        function EditRateInfo() {
+            var EditRateID = document.getElementById('EditRateID').value;
+            var EditRateCust = document.getElementById('EditRateCust').value;
+
+            $.ajax({
+                url: '/CustomerRatings/SaveCustomerRatings',
+                type: "POST",
+                dataType: "JSON",
+                data: { id: EditRateID, custRate: EditRateCust },
+                success: function (response) {
+                    $("#RatingSuccess").modal('show');
+                    
+                }
+            });
+        }
+
+        function ShowTrashQtys(id) {
+
+            $.ajax({
+                url: '/CustomerRatings/TrashItemDetails',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id },
+                success: function (response) {
+                    //alert("ddd " + response.typeList);
+                    //document.getElementById('totCname').value = response.companyName;
+                    //$('#totCname').val(response.companyName);
+
+                    //load trash item names list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", i);
+                        var node = document.createTextNode(response.itemList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divTrashName");
+                        element.appendChild(para);
+
+                        if (i != 0) {
+                            document.getElementById(i).style.marginLeft = "20px";
+                        } 
+
+                    }
+
+                    //load unit qty list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "unitQtyValue" + i);
+                        textbox.setAttribute("value", response.qtyList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("divUnitQty");
+                        element1.appendChild(textbox);
+                        //document.getElementById("unitQtyValue" + i).style.marginLeft = "50px";
+                        document.getElementById("unitQtyValue" + i).style.width = "100px";
+                        document.getElementById("unitQtyValue" + i).style.height = "20px";
+                        document.getElementById("unitQtyValue" + i).style.textAlign = "center";
+                        document.getElementById("unitQtyValue0").style.marginTop = "30px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "sample" + i);
+
+                        var element2 = document.getElementById("divUnitQty");
+                        element2.appendChild(p);
+                    }
+
+                    //load unit type list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "typeList"+i);
+                        var node = document.createTextNode(response.typeList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divQtyType");
+                        element.appendChild(para);
+                    }
+
+                    var para = document.createElement("h2");
+                    para.setAttribute("id", "totCname");
+                    var node = document.createTextNode(response.companyName);
+                    para.appendChild(node);
+                    var element = document.getElementById("divTotCname");
+                    element.appendChild(para);
+
+                    $("#qtyModal").modal('show');
+                }
+            });
+        }
+
+    </script>
+
+    <!--Script for Total Qtys-->
+    <script>
+               
+    </script>
+    <!--Modals-->
+    <div class="success modal modal fade" id="EditRatingModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Edit Rating</h4>
+                </div>
+                <div class="modal-body" id="divTestOption">
+                    <p style="margin-left:100px">
+                        <br />
+                        <b> ID </b>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditRateID" disabled /> <br />
+                        <b>Company Name </b> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditRateCompany" disabled /> <br />
+
+                        <b>Service Rating </b> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditRateService" disabled/> <br />
+
+                        <b>Total Qty</b> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditRateQty" disabled /> <br />
+                    
+                        <b>Customer Rating</b>
+                        <select class="form-control" id="EditRateCust" style="width:200px;margin-top:-25px;margin-left:150px">
+                            <option>Rate the Customer</option>
+                            <option>1 Star</option>
+                            <option>2 Star</option>
+                            <option>3 Star</option>
+                            <option>4 Star</option>
+                            <option>5 Star</option>
+                        </select>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalChangeRate" onclick="ConfirmationRateInfo()">Change Rating</button>
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnCancel">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <div class="warning modal modal fade" id="RatingConfirmation">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header  bg-yellow" id="modalHead">
+                    <h4 class="modal-title">Confirmation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="error-modal-msg" style="font-size:15px;">Are you sure about this rate for the customer ?&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="EditRateInfo()" id="modalBtn">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <div class="success modal modal fade" id="RatingSuccess">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-green" id="modalHead">
+                    <h4 class="modal-title">Edit Rating</h4>
+                </div>
+                <div class="modal-body" id="divTestOption">
+                        Customer rate has been updated successfully&hellip;
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="window.location.reload()"  class="btn btn-success" data-dismiss="modal" id="">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+
+    <div class="success modal modal fade" id="qtyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Trash Quantity Details</h4>
+                </div>
+            <div class="modal-body" style="margin-left:150px">
+                <div id="divTotCname" style="margin-top:-10px;"></div>
+                <div id="divTrashName"></div>
+                <div id="divUnitQty" style="position:absolute;margin-top:-180px;margin-left:100px;width:120px"></div>
+                <div id="divQtyType" style="position:absolute;margin-top:-156px;margin-left:220px;width:120px"></div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+            </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</body>
+</html>

@@ -17,7 +17,17 @@ namespace templateProj.Models
 
         public UnitConversion unitConversionModel { get; set; }
 
-        public List<drivers> drivers { get; set; }
-        public List<vehicles> vehicles { get; set; }
+        public List<Drivers> drivers { get; set; }
+        public List<Vehicles> vehicles { get; set; }
+        public List<Trips> trips { get; set; }
+
+        public List<Customer> customerModel { get; set; }
+
+        public List<CustomerTrash> customerTrashModel { get; set; }
+
+        public List<RecCompany> recCompanyModel { get; set; }
+
+        public List<CustomerPayment> custPaymentModel { get; set; }
+
     }
 }

@@ -92,7 +92,7 @@ desired effect
             <section class="content">
                 
 
-                <div class=" col-md-8">
+                <div class=" col-md-12">
                     <div class="box box-success">
                         <div class="box-header with-border">
                             <h3 class="box-title">All Vehicles</h3>
@@ -104,8 +104,7 @@ desired effect
                                         <tr>
                                             <th>Vechicle No</th>
                                             <th>Make</th>
-                                            <th>Capacity</th>
-                                            <th>Trash Type</th>
+                                            <th>Tonnage(MT)</th>
                                             <th>Status</th>
                                             <th></th>
                                             <th></th>
@@ -114,27 +113,42 @@ desired effect
                                         {
                                             <tr>
                                                 <td>
-                                                    <a href="#">@item.vehicleNo</a>
+                                                    <a href="#">@item.VehicleNo</a>
                                                 </td>
                                                 <td>
                                                     @item.Make
                                                 </td>
-                                                <td>@item.capacity KG</td>
-                                                <td>@item.TrashTypeCarried</td>
-                                                <td>
-                                                    @item.vehicleStatus
-                                                </td>
-
+                                                <td>@item.Capacity</td>
+                                                
+                                                
+                                                @if (item.VehicleStatus == "Not Available")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-danger">@item.VehicleStatus</small>
+                                                    </td>
+                                                }
+                                                @if (item.VehicleStatus == "Unassigned")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-warning">@item.VehicleStatus</small>
+                                                    </td>
+                                                }
+                                                @if (item.VehicleStatus == "Assigned")
+                                                {
+                                                    <td style="font-size:medium">
+                                                        <small class="label label-success">&nbsp;&nbsp;&nbsp;@item.VehicleStatus&nbsp;&nbsp;&nbsp;</small>
+                                                    </td>
+                                                }
                                                 <td>
                                                     <div class="tools">
 
-                                                        <a href="#" onclick="ShowEditVehicleInformation(@item.vehicleID)"><i class="fa fa-edit"></i></a>
+                                                        <a href="#" onclick="ShowEditVehicleInformation(@item.TableID)"><i class="fa fa-edit"></i></a>
 
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="tools">
-                                                        <a href="#" onclick="ShowDeleteVehicle(@item.vehicleID)"><i class="fa fa-trash-o" style="color:red;"></i></a>
+                                                        <a href="#" onclick="ShowDeleteVehicle(@item.TableID)"><i class="fa fa-trash-o" style="color:red;"></i></a>
 
 
                                                     </div>
@@ -151,39 +165,6 @@ desired effect
 
                 <input type="hidden" id="VehicleNoValidated" hidden>
                 <input type="hidden" id="CapacityValidated" hidden>
-
-
-                <div class=" col-md-4">
-                    <div class="box box-success">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Add new Vehicle</h3>
-                        </div>
-                        <div class="box-body">
-                            <b> Vehicle No </b>
-                            <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:90px" id="vehicleNo" /> <br />
-
-                            <b> Make</b>
-                            <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:90px" id="make" /> <br />
-
-                            <b> Capacity (Kg)</b>
-                            <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:90px" id="capacity" /> <br />
-
-                            <b>Trash Type</b>
-                            <select class="form-control" width" style="width:200px;margin-top:-25px;margin-left:90px" id="trashType">
-                                <option>Plastic</option>
-                                <option>Glass</option>
-                                <option>Polythene</option>
-                                <option>E-Waste</option>
-                                <option>Cardboard</option>
-                            </select><br />
-
-                            <button class="btn btn-block btn-success pull-right" style="background-color:seagreen; width:150px; margin-right:20px;" onclick="AddVehicle()">Add Vehicle</button>
-                        </div><!-- /.box-body -->
-                    </div>
-
-                </div>
-
-
             </section>
 
 
@@ -313,18 +294,10 @@ desired effect
                                 <b>Make</b> &nbsp;&nbsp;
                                 <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditVehicleMake" /> <br />
 
-                                <b>Capacity</b> &nbsp;&nbsp;
+                                <b>Tonnage(MT)</b> &nbsp;&nbsp;
                                 <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditVehicleCapacity" /> <br />
 
-                                <b>Trash Type</b> &nbsp;&nbsp;
-                                <select class="form-control" style="width:200px;margin-top:-25px;margin-left:150px" id="EditVehicleType">
-                                    <option>Plastic</option>
-                                    <option>Glass</option>
-                                    <option>Polythene</option>
-                                    <option>E-Waste</option>
-                                    <option>Cardboard</option>
-                                </select><br />
-
+                               
                                 <b>Status</b> &nbsp;&nbsp;
                                 <input type="text" class="form-control width" style="width:200px;margin-top:-25px;margin-left:150px" id="EditVehicleStatus" disabled /> <br />
 
@@ -414,10 +387,11 @@ desired effect
     <script src="~/Styles/plugins/datepicker/bootstrap-datepicker.js"></script>
     <script>
         function AddVehicle() {
+            
             var vehicleNo = document.getElementById('vehicleNo').value;
             var make = document.getElementById('make').value;
             var capacity = document.getElementById('capacity').value;
-            var trashType = document.getElementById('trashType').value;
+           
 
             if (vehicleNo == "") {
                 $("#vehicleNoNullValue").modal('show');
@@ -447,7 +421,7 @@ desired effect
                                 url: '/Vehicle/AddVehicle',
                                 type: "GET",
                                 dataType: "JSON",
-                                data: { vehicleNo: vehicleNo, make: make, capacity: capacity, trashType: trashType },
+                                data: { vehicleNo: vehicleNo, make: make, capacity: capacity },
                                 success: function (response) {
                                     if (response.Message == "Exsist") {
                                         $("#VehicleExsistError").modal('show');
@@ -504,7 +478,7 @@ desired effect
                     $('#EditVehicleMake').val(response.make);
                     $('#EditVehicleCapacity').val(response.capacity);
                     $('#EditVehicleStatus').val(response.status);
-                    $('#EditVehicleType').val(response.type);
+                   
                 }
             });
         }
@@ -514,7 +488,7 @@ desired effect
             var EditVehicleNo = document.getElementById('EditVehicleNo').value;
             var EditVehicleMake = document.getElementById('EditVehicleMake').value;
             var EditVehicleCapacity = document.getElementById('EditVehicleCapacity').value;
-            var EditVehicleType = document.getElementById('EditVehicleType').value;
+           
 
             if (EditVehicleNo == "") {
                 $("#vehicleNoNullValue").modal('show');
@@ -544,7 +518,7 @@ desired effect
                                 url: '/Vehicle/EditVehicleDetails',
                                 type: "GET",
                                 dataType: "JSON",
-                                data: { EditVehicleID: EditVehicleID, EditVehicleNo: EditVehicleNo, EditVehicleMake: EditVehicleMake, EditVehicleCapacity: EditVehicleCapacity, EditVehicleType: EditVehicleType },
+                                data: { EditVehicleID: EditVehicleID, EditVehicleNo: EditVehicleNo, EditVehicleMake: EditVehicleMake, EditVehicleCapacity: EditVehicleCapacity },
                                 success: function (response) {
                                     $("#VehicleEditSuccess").modal('show');
                                 }

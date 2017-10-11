@@ -11,8 +11,13 @@
             <input type="text" class="form-control" placeholder="Specify the quantity value" id="specialValue" name="specialValue" >
         </div>
         <div class="col-md-4" style="margin-top:30px">
-            <button type="button" onclick="findBestRoute()" id="btnFind" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-search" style="color:green"></i> Find Best Route</button> &nbsp;
+            <button type="button" onclick="testDijkstras()" id="btnFind" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:700;font-size:12px"><i class="fa fa-search" style="color:green"></i> Find Best Route</button> &nbsp;
+            <button type="button" onclick="AssignTrip()" id="" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:700;font-size:12px"><i class="fa  fa-truck" style="color:black"></i> Assign Trip</button> &nbsp;
+            <input type="text" id="routeLatList" name="routeLatList" hidden />
+            <input type="text" id="routeLngList" name="routeLngList" hidden />
+            <input type="text" id="routeDistance" name="routeDistance" hidden />
         </div>
+
         <div class="col-md-4" style="float:right;margin-top:30px">
             <button type="button" onclick="showAddItemModal()" id="btnAddItem" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-plus" style="color:green"></i> Add Trash Item</button> &nbsp;
             <button type="button" onclick="showRemoveItemModal()" id="btnRemoveItem1" data-toggle="modal" class="btn btn-default" style="height:30px;border-radius:10px;font-weight:600;font-size:12px"><i class="fa fa-minus" style="color:red"></i>&nbsp; Remove Trash Item</button>
@@ -158,26 +163,7 @@
                     }
                 }
             });
-        }
-
-        function findBestRoute() {
-            var specialValue = document.getElementById("specialValue").value;
-            var letters = /^[A-Za-z ]+$/;
-
-            if (specialValue == null || specialValue == "") {
-                $('#error-modal-msg').html("Please provide a value for quantity...");
-                $('#errorModal').modal({
-                    show: 'show'
-                });
-            }
-
-            if (specialValue.match(letters)) {
-                $('#error-modal-msg').html("Please provide a number for quantity...");
-                $('#errorModal').modal({
-                    show: 'show'
-                });
-            }
-        }
+        }     
 
         function EnableEditMeasurementTypes() {
 
@@ -310,6 +296,7 @@
 
                 traditional: true,
                 success: function (response) {
+                   
                     var unitItmCount = document.getElementById("unitItmCount").value;
                     for (var i = 0; i < unitItmCount; i++) {
                         document.getElementById("unitValue" + i).disabled = true;
@@ -491,7 +478,6 @@
             }
         }
 
-
         function RemoveItem() {
             var itemList = [];
 
@@ -523,15 +509,16 @@
 
     <script>
 
-
+        var markers = [];
         var map;
-        var directionsDisplay;
-        var directionsService = new google.maps.DirectionsService();
 
+        //var directionsService = new google.maps.DirectionsService();
+        //var directionsDisplay = new google.maps.DirectionsRenderer;
+
+        var markers = [];
         //this function is to load the initial map 
         function initialize() {
-            
-            directionsDisplay = new google.maps.DirectionsRenderer();
+            //directionsDisplay = new google.maps.DirectionsRenderer();
             var latlng = new google.maps.LatLng(7.291418, 80.636696);
 
             var myOptions = {
@@ -541,77 +528,311 @@
             };
             map = new google.maps.Map(document.getElementById("map"), myOptions);
 
-            directionsDisplay.setMap(map);
+            //directionsDisplay.setMap(map);
   
         }
-
-     
+  
         //window.onload = initialize;
         function markicons() {
 
             initialize();
 
-            // read the addresses and mark it on the map
-
-            //instead of this get the addresses from the database :) no need to valiudate the addresses,
-            //    validate it when customer registration
-
             // here write an ajax function to get the company name, address and quantity list. and add those things to eperate arrays. 
+            $.ajax({
+                type: 'GET',
+                url: '/RoutingAlgo/LoadDefaultCustomerLocations',
+                traditional: true,
+                success: function (response) {
 
-            var cnameList = ['Devni Home', 'Tangerine Beach Hotel', 'SLIIT', ''];
-            var addresses = ['257/11,Batadombathuduwa,Alubomulla, Panadura, Sri Lanka', 'Tangerine Beach Hotel, De Abrew Road, Waskaduwa', 'SLIIT, B263, Malabe 10115']
-            var qtyList = [150, 200, 2350];
-            var locationList = [];
+                    markLocationsDefault(response);
+                }
+            });
+        }
+
+        function markLocationsDefault(response) {
+            //alert("hello special Im your marker");
             var infowindow;
-            var j = 0;
-            var geocoder = new google.maps.Geocoder();
-            for (var i = 0; i < addresses.length; i++) {
-                geocoder.geocode({ "address": "'" + addresses[i] + "'" }, function (results, status) {
-                    if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
 
-                        var location = results[0].geometry.location;
+            var latlng = new google.maps.LatLng(7.291418, 80.636696);
+            var directionsService = new google.maps.DirectionsService;
+            var directionsDisplay = new google.maps.DirectionsRenderer;
 
-                        marker = new google.maps.Marker({
-                            map: map,
-                            position: location
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 9,
+                center: latlng
+            });
+
+            directionsDisplay.setMap(map);
+
+            for (var i = 0; i < response.addressList.length; i++) {
+
+                marker = new google.maps.Marker({
+                    map: map,
+                    position: new google.maps.LatLng(response.latList[i], response.lngList[i]),
+                    title: response.cnameList[i] + ' - ' + response.branchList[i] 
+                });
+
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        if (!infowindow) {
+                            infowindow = new google.maps.InfoWindow();
+                        }
+
+                        infowindow.setContent('<h4>Company Name : ' + response.cnameList[i] + ' - ' + response.branchList[i] + ' </h4> Address : ' + response.addressList[i] + '<br/>  Trash Qty. : ' + response.totalQtyList[i]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+               
+                markers.push(marker);
+            
+            }
+            
+        }
+
+        function markLocationsBest(response) {
+            var infowindow;
+
+            for (var i = 1; i < response.addressList.length; i++) {
+
+                marker = new google.maps.Marker({
+                    map: map,
+                    position: new google.maps.LatLng(response.latList[i], response.lngList[i]),
+                    title: response.cnameList[i] + ' - ' + response.branchList[i]
+                });
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        if (!infowindow) {
+                            infowindow = new google.maps.InfoWindow();
+                        }
+
+                        infowindow.setContent('<h4>Company Name : ' + response.cnameList[i] + ' - ' + response.branchList[i] + ' </h4> Address : ' + response.addressList[i] + '<br/>  Trash Qty. : ' + response.totalQtyList[i]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+
+                markers.push(marker);
+
+            }
+
+        }
+    </script>
+
+    <script>
+
+        function findBestRoute(sp) {
+            var specialValue = document.getElementById("specialValue").value;
+            var letters = /^[A-Za-z ]+$/;
+
+            //if (specialValue == null || specialValue == "") {
+            //    $('#error-modal-msg').html("Please provide a value for quantity...");
+            //    $('#errorModal').modal({
+            //        show: 'show'
+            //    });
+            //}
+            //else 
+            if (specialValue.match(letters)) {
+                $('#error-modal-msg').html("Please provide a number for quantity...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: '/Dijkstras/FindBestRouteBySpecialValue',
+                    data: { specialValue: specialValue },
+                    traditional: true,
+                    success: function (response) {     
+                        //alert(" hello special" + response.addressList);
+                        //deleteMarkers();
+                        //markLocationsDefault(response);
+
+                        //alert("im back");
+                        deleteMarkers();
+                        //loadRecyclingCompanyDetails(response);
+                        //markLocationsBest(response);
+                        LoadBestRouteWayPoints(response);
+
+
+                        $('#bestRouteCont').html("  " + response.finalBestPath);
+                        $('#dist').html("  Total Distance (km) : " + response.routeDistance);
+                        $('#AddItemModal2').modal({
+                            show: 'show'
                         });
-
-
-                        (function (j, marker) {
-
-                            google.maps.event.addListener(marker, 'click', function () {
-
-                                if (!infowindow) {
-                                    infowindow = new google.maps.InfoWindow();
-                                }
-
-                                // here display customer company name, address and trash quantity
-                                infowindow.setContent('<h4>Company Name : ' + cnameList[j] + ' </h4> Address : ' + addresses[j] + '<br/>  Trash Qty. : ' + qtyList[j]);
-
-                                infowindow.open(map, marker);
-
-                            });
-
-                        })(j++, marker);
+                        
                     }
                 });
             }
+
+        }
+
+        function deleteMarkers() {
+            //Loop through all the markers and remove
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
             }
+            markers = [];
+        };
     </script>
 
+    <!-- Dijkstra's Algorithm-->
+    <script>
+
+
+        function testDijkstras() {
+
+            var specialValue = document.getElementById("specialValue").value;
+
+            if (specialValue == null || specialValue == "") {
+                $.ajax({
+                    type: 'GET',
+                    url: '/Dijkstras/SetSourceVertex',
+                    traditional: true,
+                    success: function (response) {
+                        //alert("im back");
+                        deleteMarkers();
+                        //loadRecyclingCompanyDetails(response);
+                        //markLocationsBest(response);
+                        LoadBestRouteWayPoints(response);
+
+
+                        $('#bestRouteCont').html("  " + response.finalBestPath);
+                        $('#dist').html("  Total Distance (km) : " + response.routeDistance);
+                        $('#AddItemModal2').modal({
+                            show: 'show'
+                        });
+
+                    }
+                });
+            }
+            else {
+                //alert("hey, i'm special");
+                findBestRoute(specialValue);
+            }
+
+        }
+
+        function loadRecyclingCompanyDetails(response) {
+            var infowindow = new google.maps.InfoWindow({
+                content: "<h4>Recycling Company : " + response.cnameList[0] + "</h4> \n Address : " + response.addressList[0]
+            });
+
+            marker = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(response.latList[0], response.lngList[0]),
+                animation: google.maps.Animation.BOUNCE,
+                icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+            });
+
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        }
+    </script>
+
+    <!-- Way Points-->
+    <script>
+        function LoadBestRouteWayPoints(response) {
+            document.getElementById("routeLatList").value = response.latList;
+            document.getElementById("routeLngList").value = response.lngList;
+            document.getElementById("routeDistance").value = response.routeDistance;
+
+            //alert("im init map");
+            var latlng = new google.maps.LatLng(7.291418, 80.636696);
+            var directionsService = new google.maps.DirectionsService;
+            var directionsDisplay = new google.maps.DirectionsRenderer;
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 6,
+                center: latlng
+            });
+            directionsDisplay.setMap(map);
+
+            //document.getElementById('submit').addEventListener('click', function () {
+            calculateAndDisplayRoute(directionsService, directionsDisplay, response);
+        }
+
+        function calculateAndDisplayRoute(directionsService, directionsDisplay, response) {
+            var waypts = [];
+
+  
+            for (var i = 1; i < response.addressList.length -1; i++) {
+                waypts.push({
+                    location: response.addressList[i],
+                    stopover: true
+                });
+            }
+
+
+            directionsService.route({
+                origin: response.addressList[0],
+                destination: response.addressList[response.addressList.length - 1],
+                waypoints: waypts,
+                optimizeWaypoints: true,
+                travelMode: 'DRIVING'
+            }, function (response, status) {
+
+
+                if (status === 'OK') {
+                    directionsDisplay.setDirections(response);
+                    //var route = response.routes[0];
+
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+        }
+   </script>
 
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false">
 
     </script>
 
     <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjPIuM96HaZWCNawYGnH-d6zMzbuiwRKg&callback=initMap">
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQWt1yUC3P3xWeNES4IeSTAEaY9VBkJnY&callback=initMap">
     </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false">
 
     </script>
 
+    <!--Assign Trips-->
+    <script>
+        function AssignTrip() {
+
+            var routeLatList = document.getElementById("routeLatList").value;
+            var routeLngList = document.getElementById("routeLngList").value;
+            var routeDistance = document.getElementById("routeDistance").value;
+  
+            if (routeLatList.length <= 0) {
+
+                $('#error-modal-msg').html("Please find the best route...");
+                $('#errorModal').modal({
+                    show: 'show'
+                });
+            } else {
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/RoutingAlgo/AddNewRoute',
+                    data: { routeLatList: routeLatList, routeLngList: routeLngList, routeDistance: routeDistance },
+                    traditional: true,
+                    success: function (response) {
+                        $('#success-modal-msg').html("Route has been assigned successfully..");
+                        $('#successModal').modal({
+                            show: 'show'
+                        });
+
+                    }
+                });
+            }
+
+        }
+    </script>
 
     <!-----------------------------------------------------Modal Poupus------------------------------------------------->
    
@@ -643,6 +864,25 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     
+    <!--used for best route popup -->
+    <div class="success modal modal fade" id="AddItemModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead2">
+                    <h4 class="modal-title">Best Route ( Coverage, Distance, Quantity ) </h4>
+                </div>
+                <div class="modal-body">
+                    <p id="bestRouteCont" style="font-size:15px;">message content here&hellip;</p>
+                    <br />
+                    <h4 id="dist"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtnC1">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <!--used for delete item-->
     <div align="center" class="success modal modal fade" id="RemoveItemModal">
         <div class="modal-dialog">
@@ -729,6 +969,7 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
     <!--error modal body-->
     <div class="success modal modal fade" id="errorModal">
         <div class="modal-dialog">

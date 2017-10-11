@@ -52,7 +52,7 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition skin-blue sidebar-mini" onload="LoadItemPrices()">
+<body class="hold-transition skin-blue sidebar-mini" onload="LoadItemPrices();">
     <div class="wrapper">
         <!-- Rendering the partial view for the navigation bar-->
             @Html.Partial("_AdminNavigation", Model.usermodel);
@@ -71,20 +71,49 @@ desired effect
             <!-- Main content -->
             <section class="content">
                 <div class="row" style="margin-top:-20px">
-                    <!-- Load the map here -->
-                    <div class="col-md-9">
-                        <!-- Load the map here -->
+                    <div class=" col-md-9">
                         <div class="box box-success">
-                            <div class="box-body box-profile">
-
-                                <p class="text-muted text-center"><b>Customer Details</b></p>
-
-                                <div id="map" style="height:480px;width:100%">  </div>
+                            <div class="box-header with-border">
+                                <h3 class="box-title">All Payments</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="box-body table-responsive no-padding">
+                                    <table class="table table-hover">
+                                        <tbody>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Company Name </th>
+                                                <th>Total Qty</th>
+                                                <th>Amount(Rs.)</th>
+                                                <th>Payment Details</th>
+                                                <th>Proceed / Pending</th>
+                                            </tr>
+                               
+                                            @foreach (var item in Model.custPaymentModel)
+                                            {
+                                                <tr>
+                                                    <td><a href="#">@item.TableID</a></td>
+                                                    <td> @item.CompanyName  - @item.Branch &nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td><button type="button" onclick="ShowTrashQtys(@item.TableID)" style="font-weight:500;color:green;text-decoration:underline;background:none;border:none;" id="@item.TableID">View Quantity Report</button> &nbsp;</td>
+                                                    <td><button type="button" onclick="ShowAmountReport(@item.TableID)" style="font-weight:500;color:cadetblue;text-decoration:underline;background:none;border:none;" id="@item.TableID">View Payment Report</button> &nbsp;</td>
+                                                   @if (item.PaymentStatus.Equals("Proceed"))
+                                                   {
+                                                    <td><button type="button" onclick="ShowPaymentReport(@item.TableID)" class="btn btn-block btn-success">Completed</button></td>
+                                                       <td><button type="button" class="btn btn-block btn-instagram disabled">Proceed</button></td>
+                                                   }
+                                                   else
+                                                   {
+                                                    <td><button type="button" onclick="ShowPaymentReport(@item.TableID)" class="btn btn-block btn-warning">Pending</button></td>
+                                                       <td><button type="button" onclick="DoPayment(@item.TableID)" class="btn btn-block btn-instagram">Proceed</button></td>
+                                                   }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div><!-- /.box-body -->
-
-                        </div><!-- /.box -->
-
-                    </div><!-- /.col -->
+                        </div>
+                    </div>
 
                     <div class="col-md-3">
                         <!-- Trash type units-->
@@ -129,6 +158,305 @@ desired effect
     <!---------------------------------------------       Scripts ----------------------------------------->
     <!--scripts need for manage trash item prices -->
     <script>
+        function DoPayment(id) {
+            $.ajax({
+                type: 'POST',
+                url: '/CustomerPayment/ProceedPayment',
+                data: { id: id },
+                traditional: true,
+                success: function (response) {
+
+                    $('#success-modal-msg').html("Payment proceeded successfully..");
+                    $('#successModal').modal({
+                        show: 'show'
+                    });
+                    //window.location.reload();
+                }
+            });
+        }
+
+        function ShowTrashQtys(id) {
+            $.ajax({
+                url: '/CustomerPayment/FindTrashItemDetails',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id },
+                success: function (response) {
+                    //load trash item names list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", i);
+                        var node = document.createTextNode(response.itemList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divTrashName2");
+                        element.appendChild(para);
+
+                        if (i != 0) {
+                            document.getElementById(i).style.marginLeft = "20px";
+                        }
+
+                    }
+
+                    //load unit qty list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "unitQtyValue" + i);
+                        textbox.setAttribute("value", response.qtyList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("divUnitQty");
+                        element1.appendChild(textbox);
+                        //document.getElementById("unitQtyValue" + i).style.marginLeft = "50px";
+                        document.getElementById("unitQtyValue" + i).style.width = "100px";
+                        document.getElementById("unitQtyValue" + i).style.height = "20px";
+                        document.getElementById("unitQtyValue" + i).style.textAlign = "center";
+                        document.getElementById("unitQtyValue0").style.marginTop = "30px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "sample" + i);
+
+                        var element2 = document.getElementById("divUnitQty");
+                        element2.appendChild(p);
+                    }
+
+                    //load unit type list
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "typeList" + i);
+                        var node = document.createTextNode(response.typeList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("divQtyType");
+                        element.appendChild(para);
+                    }
+
+                    var para = document.createElement("h2");
+                    para.setAttribute("id", "totCname");
+                    var node = document.createTextNode(response.companyName);
+                    para.appendChild(node);
+                    var element = document.getElementById("divTotCname");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h3");
+                    para.setAttribute("id", "totQty");
+                    var node = document.createTextNode(response.qtySummary);
+                    para.appendChild(node);
+                    var element = document.getElementById("divQtySummary");
+                    element.appendChild(para);
+
+                    $("#qtyModal").modal('show'); 
+                }
+            });
+        }
+        function ShowAmountReport(id) {
+
+            $.ajax({
+                type: 'GET',
+                url: '/CustomerPayment/AmountReport',
+                data: { id: id },
+                traditional: true,
+                success: function (response) {
+             
+                    //load trash item names list
+
+                    var paraT = document.createElement("p");
+                    paraT.setAttribute("id", "aTname");
+                    var nodeT = document.createTextNode("Trash Type");
+                    paraT.appendChild(nodeT);
+                    var elementT = document.getElementById("amt_divTrashName");
+                    elementT.appendChild(paraT);
+                    document.getElementById("aTname").style.fontWeight = "700";
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "a"+i);
+                        var node = document.createTextNode(response.itemList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("amt_divTrashName");
+                        element.appendChild(para);
+
+                        if (i != 0) {
+                            document.getElementById(i).style.marginLeft = "20px";
+                        }
+
+                    }
+
+                      //load unit qty list
+                    var paraQ = document.createElement("p");
+                    paraQ.setAttribute("id", "aQty");
+                    var nodeQ = document.createTextNode("Quantity");
+                    paraQ.appendChild(nodeQ);
+                    var elementQ = document.getElementById("amt_divUnitQty");
+                    elementQ.appendChild(paraQ);
+                    document.getElementById("aQty").style.fontWeight = "700";
+                    document.getElementById("aQty").style.marginTop = "-15px";
+                  
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "amt_unitQtyValue" + i);
+                        textbox.setAttribute("value", response.qtyList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("amt_divUnitQty");
+                        element1.appendChild(textbox);
+                        //document.getElementById("unitQtyValue" + i).style.marginLeft = "50px";
+                        document.getElementById("amt_unitQtyValue" + i).style.width = "100px";
+                        document.getElementById("amt_unitQtyValue" + i).style.height = "20px";
+                        document.getElementById("amt_unitQtyValue" + i).style.textAlign = "center";
+                        document.getElementById("amt_unitQtyValue0").style.marginTop = "-100px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "amt_sample" + i);
+
+                        var element2 = document.getElementById("amt_divUnitQty");
+                        element2.appendChild(p);
+                    }
+
+                    //load unit type list
+
+                    var paraMT = document.createElement("p");
+                    paraMT.setAttribute("id", "aMT");
+                    var nodeMT = document.createTextNode("Unit Type");
+                    paraMT.appendChild(nodeMT);
+                    var elementMT = document.getElementById("amt_divUnitType");
+                    elementMT.appendChild(paraMT);
+                    document.getElementById("aMT").style.fontWeight = "700";
+                    document.getElementById("aMT").style.marginTop = "-45px";
+
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "amt_typeList" + i);
+                        var node = document.createTextNode(response.typeList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("amt_divUnitType");
+                        element.appendChild(para);
+                    }
+
+
+                    //load unit price list
+                    var paraPr = document.createElement("p");
+                    paraPr.setAttribute("id", "aPr");
+                    var nodePr = document.createTextNode("Unit Price");
+                    paraPr.appendChild(nodePr);
+                    var elementPr = document.getElementById("amt_divUnitPr");
+                    elementPr.appendChild(paraPr);
+                    document.getElementById("aPr").style.fontWeight = "700";
+                    document.getElementById("aPr").style.marginTop = "-15px";
+
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var textbox = document.createElement("INPUT");
+                        textbox.setAttribute("id", "amt_unitPrValue" + i);
+                        textbox.setAttribute("value", response.unitPriceList[i])
+                        textbox.setAttribute("disabled", true);
+
+                        var element1 = document.getElementById("amt_divUnitPr");
+                        element1.appendChild(textbox);
+                        //document.getElementById("unitQtyValue" + i).style.marginLeft = "50px";
+                        document.getElementById("amt_unitPrValue" + i).style.width = "100px";
+                        document.getElementById("amt_unitPrValue" + i).style.height = "20px";
+                        document.getElementById("amt_unitPrValue" + i).style.textAlign = "center";
+                        //document.getElementById("amt_unitPrValue0").style.marginTop = "30px";
+
+                        var p = document.createElement("p");
+                        p.setAttribute("id", "amt_samplePr" + i);
+
+                        var element2 = document.getElementById("amt_divUnitPr");
+                        element2.appendChild(p);
+                    }
+
+                    //load amount list
+
+                    var paraAmt = document.createElement("p");
+                    paraAmt.setAttribute("id", "amount");
+                    var nodeAmt = document.createTextNode("Amount (Rs.)");
+                    paraAmt.appendChild(nodeAmt);
+                    var elementAmt = document.getElementById("amt_divAmount");
+                    elementAmt.appendChild(paraAmt);
+                    document.getElementById("amount").style.fontWeight = "700";
+                    document.getElementById("amount").style.marginTop = "-15px";
+
+                    for (var i = 0; i < response.itemList.length; i++) {
+
+                        var para = document.createElement("p");
+                        para.setAttribute("id", "amt_amountList" + i);
+                        var node = document.createTextNode(response.amountList[i]);
+                        para.appendChild(node);
+                        var element = document.getElementById("amt_divAmount");
+                        element.appendChild(para);
+                    }
+
+                    var para = document.createElement("h2");
+                    para.setAttribute("id", "amt_totCname");
+                    var node = document.createTextNode(response.companyName);
+                    para.appendChild(node);
+                    var element = document.getElementById("amt_divTotCname");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h3");
+                    para.setAttribute("id", "amt_totQty");
+                    var node = document.createTextNode(response.amountSummary);
+                    para.appendChild(node);
+                    var element = document.getElementById("amt_divQtySummary");
+                    element.appendChild(para);
+
+                    $("#amountReportModal").modal('show');
+                    }
+            });
+        }
+        function ShowPaymentReport(id) {
+            $.ajax({
+                url: '/CustomerPayment/FindPaymentDetails',
+                type: "GET",
+                dataType: "JSON",
+                data: { id: id },
+                success: function (response) {
+
+                    var para = document.createElement("h2");
+                    para.setAttribute("id", "totCname2");
+                    var node = document.createTextNode(response.paymentDetails[0]);
+                    para.appendChild(node);
+                    var element = document.getElementById("divTotCname2");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h4");
+                    para.setAttribute("id", "pDate");
+                    var node = document.createTextNode("Payment Date : "+response.paymentDetails[2]);
+                    para.appendChild(node);
+                    var element = document.getElementById("pDate");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h4");
+                    para.setAttribute("id", "pStatus");
+                    var node = document.createTextNode("Payment Status : "+response.paymentDetails[3]);
+                    para.appendChild(node);
+                    var element = document.getElementById("pStatus");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h4");
+                    para.setAttribute("id", "pAmount");
+                    var node = document.createTextNode("Amount (Rs.) "+response.paymentDetails[4]);
+                    para.appendChild(node);
+                    var element = document.getElementById("pAmount");
+                    element.appendChild(para);
+
+                    var para = document.createElement("h3");
+                    para.setAttribute("id", "divQtySummary2");
+                    var node = document.createTextNode(response.paymentDetails[1]);
+                    para.appendChild(node);
+                    var element = document.getElementById("divQtySummary2");
+                    element.appendChild(para);
+
+                    $("#paymentModal").modal('show');
+                }
+            });
+
+
+        }
         function LoadItemPrices() {
             $.ajax({
                 type: 'GET',
@@ -232,7 +560,7 @@ desired effect
                 dataArr.push(document.getElementById("unitPriceValue" + i).value);
             }
            
-            for (var j = dataArr.length - 1; j < 10; j++) {
+            for (var j = dataArr.length - 1; j < 15; j++) {
                 dataArr.push(null);
             }
     
@@ -265,6 +593,82 @@ desired effect
         }
 
     </script>
+
+    <!-------------------------------------------------------------Modals------------------------------------------>
+
+    <div class="success modal modal fade" id="amountReportModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Monthly Payment Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="amt_divTotCname" style="margin-top:-10px;margin-left:150px;"></div>
+                    <br />
+                    <div id="amt_divTrashName"></div>
+                    <br />
+                    <div id="amt_divUnitQty" style="position:absolute;margin-top:-180px;margin-left:100px;width:120px"></div>
+                    <div id="amt_divUnitType" style="position:absolute;margin-top:-150px;margin-left:220px;width:120px"></div>
+                    <div id="amt_divUnitPr"  style="position:absolute;margin-top:-180px;margin-left:340px;width:120px"></div>
+                    <div id="amt_divAmount" style="position:absolute;margin-top:-180px;margin-left:460px;width:120px"></div>
+                    <div id="amt_divQtySummary" style="margin-left:150px;"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="success modal modal fade" id="paymentModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Trash Payment Status</h4>
+                </div>
+                <div class="modal-body" style="margin-left:150px">
+                    <div id="divTotCname2" style="margin-top:-10px;"></div>
+                    <br />
+
+                    <div id="divPaymentDate"> </div>
+                    <div id="pDate"></div>
+                    <div id="pStatus"></div>
+                    <div id="pAmount"></div>
+                    <div id="divQtySummary2"></div>
+                    <br /><br />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="success modal modal fade" id="qtyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue-active" id="modalHead">
+                    <h4 class="modal-title">Trash Quantity Details</h4>
+                </div>
+                <div class="modal-body" style="margin-left:150px">
+                    <div id="divTotCname" style="margin-top:-10px;"></div>
+                    <br />
+
+                    <div id="divTrashName2"></div>
+                    <div id="divUnitQty" style="position:absolute;margin-top:-180px;margin-left:100px;width:120px"></div>
+                    <div id="divQtyType" style="position:absolute;margin-top:-150px;margin-left:220px;width:120px"></div>
+                    <div id="divQtySummary"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-instagram" data-dismiss="modal" id="modalBtn" onclick="window.location.reload();">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <!--success Message-->
     <div class="success modal modal fade" id="successModal">
         <div class="modal-dialog">

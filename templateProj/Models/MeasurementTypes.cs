@@ -14,8 +14,11 @@ namespace templateProj.Models
         public int TableID { get; set; }
 
         public string MeasurementType1 { get; set; }
+
         public string MeasurementType2 { get; set; }
+
         public string MeasurementType3 { get; set; }
+
 
     }
 }
