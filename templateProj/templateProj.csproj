@@ -34,8 +34,8 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <PublishDatabaseSettings>
       <Objects>
-        <ObjectGroup Name="DBcon-Deployment" Order="1">
-          <Destination Path="Data Source=tcp:eco-garb-database-server.database.windows.net,1433%3bPersist Security Info=True%3bUser ID=EcoGarb_it14064814%3bPassword=database_password%40123%3bMultipleActiveResultSets=False%3bConnect Timeout=30%3bEncrypt=True%3bTrustServerCertificate=False" />
+        <ObjectGroup Name="DBcon-Deployment" Order="1" Description="Web has been completed without realtime vehicle tracking%28-Rukshi%29" Enabled="True">
+          <Destination Path="Data Source=tcp:eco-garb-database-server.database.windows.net,1433%3bInitial Catalog=Eco-Garb-database%3bPersist Security Info=False%3bUser ID=EcoGarb_it14064814%3bPassword=database_password%40123%3bMultipleActiveResultSets=False%3bConnect Timeout=30%3bEncrypt=True%3bTrustServerCertificate=False" />
           <Object Type="DbFullSql" Enabled="True">
             <PreSource Path="Data Source=.%3bInitial Catalog=AppDB%3bIntegrated Security=True" ScriptSchema="False" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
             <Source Path="obj\Debug\AutoScripts\DBcon-Deployment_DataOnly.sql" Transacted="True" />
@@ -43,7 +43,7 @@
         </ObjectGroup>
       </Objects>
     </PublishDatabaseSettings>
-    <FilesToIncludeForPublish>OnlyFilesToRunTheApp</FilesToIncludeForPublish>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
     <DeployEncryptKey>Encryption password is used only if any deployment setting is marked as secure</DeployEncryptKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -275,6 +275,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Properties\PublishProfiles\Eco-Garb-WebApplication - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\EcoGarbWebApplicationNew - Web Deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1189,6 +1190,10 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

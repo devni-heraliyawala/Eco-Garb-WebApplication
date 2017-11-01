@@ -10,6 +10,7 @@ namespace templateProj.Models
     {
         public DataContext() : base("DBcon")         
         {
+            ////Database.SetInitializer<DataContext>(null);
         } 
  
         public DbSet<UserModel> Umodel { get; set; }

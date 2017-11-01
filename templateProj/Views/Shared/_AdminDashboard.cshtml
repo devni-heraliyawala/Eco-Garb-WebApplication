@@ -494,11 +494,22 @@
 
                 traditional: true,
                 success: function (response) {
-                    //success message - modal popup
-                    $('#success-modal-msg').html("Successfully deleted..");
-                    $('#successModal').modal({
-                        show: 'show'
-                    });
+
+                    //if true; then error message. else can delete 
+                    if (response.res) {
+                        $('#error-modal-msg').html("Can not delete. Some customers still have that type of trash...");
+                        $('#errorModal').modal({
+                            show: 'show'
+                        });
+                    } else {
+                        //success message - modal popup
+                        $('#success-modal-msg').html("Successfully deleted..");
+                        $('#successModal').modal({
+                            show: 'show'
+                        });
+                    }
+
+                   
                     
                 }
             });

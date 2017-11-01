@@ -131,6 +131,7 @@ namespace templateProj.Controllers
         {
             string uname = HttpContext.Session["Uname"].ToString();
             UserModel um = db.Umodel.Find(uname);
+            bool flag = false;
 
             try
             {
@@ -150,32 +151,47 @@ namespace templateProj.Controllers
                         RemoveItemList.Add(itemList[i]);
                     }
 
-                    // fill that list with null values until it comes for the default state
-                    for (int i = itemList.Length - 1; i < fullItemList.Count(); i++)
-                    {
-                        RemoveItemList.Add(null);
-                    }
+                    //if customers still using that trash type, then it can't be deleted.
 
-                 
-                    // if items about to delete is found set it to null
-                    for (int i = 0; i < fullItemList.Count(); i++)
+                    var customers = dc.customerTrashModel.Where(r => r.CompanyName == um.CompanyName).Where(c => c.CollectingStatus != "Collected");
+                    
+                    //if customers are still using. then it return true.else false. can delete only
+                    // when flag is false.
+                    flag = CheckForTrashTypeUsage(RemoveItemList, customers, flag);
+
+                    if (!flag)
                     {
-                        for (int j = 0; j < RemoveItemList.Count(); j++)
+                        // fill that list with null values until it comes for the default state
+                        for (int i = itemList.Length - 1; i < fullItemList.Count(); i++)
                         {
-                            if (fullItemList[i] == RemoveItemList[j])
+                            RemoveItemList.Add(null);
+                        }
+
+
+                        // if items about to delete is found set it to null
+                        for (int i = 0; i < fullItemList.Count(); i++)
+                        {
+                            for (int j = 0; j < RemoveItemList.Count(); j++)
                             {
-                                //modify that item.. remove that item from the both tables ..set to null will be fine
-                                fullItemList[i] = null;
-                                fullTypeList[i] = null;
+                                if (fullItemList[i] == RemoveItemList[j])
+                                {
+                                    //modify that item.. remove that item from the both tables ..set to null will be fine
+                                    fullItemList[i] = null;
+                                    fullTypeList[i] = null;
+                                }
                             }
                         }
+
+                        UpdateItemNames(fullItemList.ToArray(), um);
+                        UpdateMeasurementTypes(fullTypeList.ToArray(), um);
+                        ItemTableUpdateItemNames(fullItemList.ToArray(), um);
+
+                        dc.SaveChanges();
                     }
-
-                    UpdateItemNames(fullItemList.ToArray(), um);
-                    UpdateMeasurementTypes(fullTypeList.ToArray(), um);
-                    ItemTableUpdateItemNames(fullItemList.ToArray(), um);
-
-                    dc.SaveChanges();
+                    else
+                    {
+                        Console.WriteLine("Can not delete. Because some customers still have that type of garbage");
+                    }
                 }
             }
             catch (Exception ex)
@@ -183,7 +199,99 @@ namespace templateProj.Controllers
                 Console.WriteLine(ex.Message);
             }
 
-            return Json(new { res = true }, JsonRequestBehavior.AllowGet);
+            return Json(new { res = flag }, JsonRequestBehavior.AllowGet);
+        }
+
+        private static bool CheckForTrashTypeUsage(List<string> RemoveItemList, IQueryable<CustomerTrash> customers, bool flag)
+        {
+            for (int i = 0; i < RemoveItemList.Count; i++)
+            {
+                foreach (var customer in customers)
+                {
+                    if (!String.IsNullOrEmpty(customer.ItemName1) && customer.ItemName1 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName2) && customer.ItemName2 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName3) && customer.ItemName3 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName4) && customer.ItemName4 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName5) && customer.ItemName5 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName6) && customer.ItemName6 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName7) && customer.ItemName7 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName8) && customer.ItemName8 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName9) && customer.ItemName9 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName10) && customer.ItemName10 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName11) && customer.ItemName11 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName12) && customer.ItemName12 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName13) && customer.ItemName13 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName14) && customer.ItemName14 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else if (!String.IsNullOrEmpty(customer.ItemName15) && customer.ItemName15 == RemoveItemList[i])
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else
+                    {
+                        flag = false;
+                    }
+
+                }
+            }
+
+            return flag;
         }
         #endregion
 
